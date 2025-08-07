@@ -1,88 +1,71 @@
 import { NextRequest, NextResponse } from "next/server"
-import { type SafetyCheckInPayload } from "@/types/checkin"
+import type { Checkin } from "@/types/checkin"
 
-// Ephemeral in-memory store for demo purposes
-type Store = {
-  checkins: SafetyCheckInPayload[]
-}
-const globalStore: Store =
-  // @ts-expect-error attach to global for dev demo persistence
-  (globalThis.__CHECKIN_STORE__ as Store) ||
-  // @ts-expect-error attach to global for dev demo persistence
-  (globalThis.__CHECKIN_STORE__ = { checkins: [] })
+let DB: Checkin[] = []
 
-function ok<T>(data: T, init?: number | ResponseInit) {
-  return NextResponse.json(data as any, typeof init === "number" ? { status: init } : init)
+function id() {
+  return Math.random().toString(36).slice(2, 10)
 }
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const status = searchParams.get("status")
-  const limit = parseInt(searchParams.get("limit") || "50", 10)
-
-  let out = globalStore.checkins
-  if (status === "need_help" || status === "safe" || status === "cant_evacuate") {
-    out = out.filter((c) => c.status === status)
-  }
-  // newest first
-  out = [...out].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, limit)
-
-  return ok({ items: out, count: out.length })
+export async function GET() {
+  const data = [...DB].sort((a, b) => b.createdAt - a.createdAt)
+  return NextResponse.json({ data })
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as SafetyCheckInPayload
-    if (!body?.id || !body?.createdAt || !body?.status) {
-      return ok({ error: "Invalid payload" }, 400)
-    }
-    // Minimal validation
-    if (!["safe", "need_help", "cant_evacuate"].includes(body.status)) {
-      return ok({ error: "Invalid status" }, 400)
+    const body = await req.json()
+    const now = Date.now()
+
+    const record: Checkin = {
+      id: id(),
+      createdAt: now,
+      updatedAt: now,
+      status: body.status,
+      name: body.name?.slice(0, 80),
+      contact: body.contact?.slice(0, 120),
+      language: body.language?.slice(0, 40),
+      notes: body.notes?.slice(0, 2000),
+      location: body.location ?? null,
+      mobility: body.mobility,
+      dependents: {
+        children: !!body?.dependents?.children,
+        elders: !!body?.dependents?.elders,
+        pets: !!body?.dependents?.pets,
+      },
+      assignedTo: null,
+      assignmentStatus: "unassigned",
     }
 
-    // Initialize assignment if missing
-    body.assignment = body.assignment ?? {
-      state: "unassigned",
-      updatedAt: new Date().toISOString(),
-    }
-
-    globalStore.checkins.unshift(body)
-    // cap memory
-    if (globalStore.checkins.length > 500) globalStore.checkins.pop()
-
-    return ok({ success: true, item: body })
-  } catch (e) {
-    return ok({ error: "Bad JSON" }, 400)
+    DB.unshift(record)
+    return NextResponse.json({ ok: true, record }, { status: 201 })
+  } catch {
+    return NextResponse.json({ ok: false, error: "Invalid payload" }, { status: 400 })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { id, updates } = (await req.json()) as {
-      id: string
-      updates: Partial<SafetyCheckInPayload>
-    }
-    if (!id || !updates) return ok({ error: "Missing id or updates" }, 400)
+    const body = await req.json()
+    const { id: checkinId } = body as { id?: string }
+    if (!checkinId) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 })
 
-    const idx = globalStore.checkins.findIndex((c) => c.id === id)
-    if (idx === -1) return ok({ error: "Not found" }, 404)
+    const idx = DB.findIndex((c) => c.id === checkinId)
+    if (idx === -1) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 })
 
-    // Merge assignment updates carefully
-    const current = globalStore.checkins[idx]
-    const next = {
+    const current = DB[idx]
+    const updated: Checkin = {
       ...current,
-      ...updates,
-      assignment: {
-        ...current.assignment,
-        ...updates.assignment,
-        updatedAt: new Date().toISOString(),
-      },
-    } as SafetyCheckInPayload
+      assignedTo: body.assignedTo !== undefined ? body.assignedTo : current.assignedTo,
+      assignmentStatus:
+        body.assignmentStatus !== undefined ? body.assignmentStatus : current.assignmentStatus,
+      updatedAt: Date.now(),
+      notes: body.notes !== undefined ? String(body.notes).slice(0, 2000) : current.notes,
+    }
 
-    globalStore.checkins[idx] = next
-    return ok({ success: true, item: next })
+    DB[idx] = updated
+    return NextResponse.json({ ok: true, record: updated })
   } catch {
-    return ok({ error: "Bad JSON" }, 400)
+    return NextResponse.json({ ok: false, error: "Invalid payload" }, { status: 400 })
   }
 }

@@ -1,22 +1,48 @@
+import TLRTBanner from "@/components/common/tlrt-banner"
 import SafetyCheckIn from "@/components/civilian/safety-check-in"
-import { BackToHome } from "@/components/navigation/BackToHome"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Heart, ShieldAlert } from 'lucide-react'
+import AlertFeed from "@/components/bodyguard/alert-feed"
 
 export default function CivilianPortalPage() {
   return (
-    <main className="min-h-screen bg-stone-50">
-      <BackToHome />
-      <div className="max-w-3xl mx-auto p-6 space-y-6">
-        <header className="text-center">
-          <h1 className="text-3xl font-bold">Civilian Portal</h1>
-          <p className="text-stone-600 mt-1">
-            Check in, request help, and share status with responders and community officials.
-          </p>
-        </header>
+    <main className="min-h-screen bg-white">
+      <header className="sticky top-0 z-10 border-b bg-white/90 backdrop-blur">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Link href="/landing">
+              <Button variant="outline" className="border-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            </Link>
+            <h1 className="text-xl font-bold">Civilian Portal</h1>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/bodyguard">
+              <Button variant="outline" className="border-2">
+                <ShieldAlert className="h-4 w-4 mr-2" />
+                BodyGuard
+              </Button>
+            </Link>
+            <Link href="/hero-mode-landing">
+              <Button className="bg-red-600 text-white border-2 border-black">
+                <Heart className="h-4 w-4 mr-2" />
+                Open Hero Mode
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <section className="container mx-auto px-4 py-6">
+        <TLRTBanner className="mb-6" />
+        <div className="mb-6">
+          <AlertFeed title="Emergency Alerts Near You" showAdminControls={false} compact nearbyFilter={{ lat: 49.2827, lng: -123.1207, radiusMeters: 5000 }} />
+        </div>
         <SafetyCheckIn />
-        <footer className="text-center text-xs text-stone-500">
-          Consent-first system aligned with OCAP. This demo simulates offline resilience and mesh readiness.
-        </footer>
-      </div>
+      </section>
     </main>
   )
 }

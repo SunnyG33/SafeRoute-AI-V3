@@ -1,26 +1,39 @@
 export type CheckinStatus = "safe" | "need_help" | "cant_evacuate"
 
-export interface SafetyCheckInPayload {
+export type AssignmentStatus =
+  | "unassigned"
+  | "claimed"
+  | "en_route"
+  | "arrived"
+  | "completed"
+
+export interface LocationInfo {
+  lat: number
+  lng: number
+  accuracy?: number
+  territory?: string
+}
+
+export interface DependentsInfo {
+  children: boolean
+  elders: boolean
+  pets: boolean
+}
+
+export type MobilityLevel = "none" | "limited" | "wheelchair" | "bedbound"
+
+export interface Checkin {
   id: string
-  createdAt: string // ISO
+  createdAt: number
+  updatedAt: number
   status: CheckinStatus
-  note?: string
-  dependents?: number
-  mobilityNeeds?: boolean
+  name?: string
+  contact?: string
   language?: string
-  shareLocation: boolean
-  location?: {
-    lat: number
-    lng: number
-    accuracy?: number
-  } | null
-  territory?: string | null
-  consentCommunityShare: boolean
-  userAlias?: string // anonymous-friendly alias
-  assignment?: {
-    responderId?: string
-    responderName?: string
-    state?: "unassigned" | "claimed" | "en_route" | "arrived" | "completed"
-    updatedAt?: string
-  }
+  notes?: string
+  location: LocationInfo | null
+  mobility?: MobilityLevel
+  dependents?: DependentsInfo
+  assignedTo?: string | null
+  assignmentStatus: AssignmentStatus
 }

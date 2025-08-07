@@ -1,37 +1,46 @@
-"use client"
-
 import ResponderDashboard from "@/components/responder/responder-dashboard"
-import { BackToHome } from "@/components/navigation/BackToHome"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Activity, ShieldAlert } from 'lucide-react'
+import AlertFeed from "@/components/bodyguard/alert-feed"
 
 export default function ResponderPortalPage() {
   return (
     <main className="min-h-screen bg-white">
-      <BackToHome />
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-3xl font-bold">Responder Portal</h1>
-          <p className="text-stone-600">
-            Receive civilian check-ins, claim cases, and coordinate response with Scene Sync concepts.
-          </p>
-          <Card className="bg-stone-50">
-            <CardContent className="p-4 flex flex-wrap gap-3 items-center">
-              <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200">
-                First Responder OS
-              </Badge>
-              <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200">
-                Self SafeShare Scene Sync
-              </Badge>
-              <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200">
-                Mesh/Offline Ready
-              </Badge>
-            </CardContent>
-          </Card>
-        </header>
+      <header className="sticky top-0 z-10 border-b bg-white/90 backdrop-blur">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Link href="/landing">
+              <Button variant="outline" className="border-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            </Link>
+            <h1 className="text-xl font-bold">Responder Portal</h1>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/government-dashboard">
+              <Button className="bg-blue-600 text-white border-2 border-black">
+                <Activity className="h-4 w-4 mr-2" />
+                Open EOC Dashboard
+              </Button>
+            </Link>
+            <Link href="/bodyguard">
+              <Button variant="outline" className="border-2">
+                <ShieldAlert className="h-4 w-4 mr-2" />
+                BodyGuard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
+      <section className="container mx-auto px-4 py-6">
         <ResponderDashboard />
-      </div>
+      </section>
+      <section className="container mx-auto px-4 py-6">
+        <AlertFeed title="Broadcasts" showAdminControls={false} />
+      </section>
     </main>
   )
 }

@@ -1,39 +1,32 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
-import { type SafetyCheckInPayload } from "@/types/checkin"
-import { Activity, Check, CheckCircle2, CircleDot, Hand, MapPin, PhoneCall, Shield, UserSearch } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { AlertTriangle, CheckCircle, MapPin, Shield, UserCheck } from 'lucide-react'
+import type { Checkin } from "@/types/checkin"
 
-function timeSince(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return "just now"
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
+type Summary = {
+  total: number
+  unassigned: number
+  claimed: number
+  en_route: number
+  arrived: number
+  completed: number
+  need_help: number
+  cant_evacuate: number
 }
 
 export default function ResponderDashboard() {
-  const { toast } = useToast()
-  const [items, setItems] = useState<SafetyCheckInPayload[]>([])
-  const [query, setQuery] = useState("")
-  const [filter, setFilter] = useState<"all" | "need_help" | "cant_evacuate" | "safe">("all")
-  const [name, setName] = useState<string>("Responder 12")
-  const [loading, setLoading] = useState(false)
+  const [items, setItems] = useState<Checkin[]>([])
+  const [loading, setLoading] = useState(true)
 
   async function load() {
-    setLoading(true)
     try {
-      const res = await fetch("/api/checkins?limit=200")
-      const data = await res.json()
-      setItems(data.items || [])
+      const res = await fetch("/api/checkins", { cache: "no-store" })
+      const json = await res.json()
+      setItems(json?.data ?? [])
     } finally {
       setLoading(false)
     }
@@ -41,244 +34,159 @@ export default function ResponderDashboard() {
 
   useEffect(() => {
     load()
-    const t = setInterval(load, 5000)
-    return () => clearInterval(t)
+    const id = setInterval(load, 3000)
+    return () => clearInterval(id)
   }, [])
 
-  const filtered = useMemo(() => {
-    return items.filter((i) => {
-      if (filter !== "all" && i.status !== filter) return false
-      if (!query) return true
-      const hay = `${i.userAlias ?? ""} ${i.note ?? ""} ${i.territory ?? ""}`.toLowerCase()
-      return hay.includes(query.toLowerCase())
-    })
-  }, [items, query, filter])
+  const summary: Summary = useMemo(() => {
+    const s: Summary = {
+      total: items.length,
+      unassigned: 0,
+      claimed: 0,
+      en_route: 0,
+      arrived: 0,
+      completed: 0,
+      need_help: 0,
+      cant_evacuate: 0,
+    }
+    for (const it of items) {
+      // @ts-ignore dynamic key access
+      s[it.assignmentStatus]++
+      if (it.status === "need_help") s.need_help++
+      if (it.status === "cant_evacuate") s.cant_evacuate++
+    }
+    return s
+  }, [items])
 
-  async function patch(id: string, updates: Partial<SafetyCheckInPayload>) {
+  async function updateStatus(id: string, assignmentStatus: Checkin["assignmentStatus"], assignedTo?: string) {
     const res = await fetch("/api/checkins", {
       method: "PATCH",
-      body: JSON.stringify({ id, updates }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, assignmentStatus, assignedTo }),
     })
-    const data = await res.json()
-    if (!res.ok || data?.error) {
-      toast({ title: "Update failed", description: data?.error || "Unknown error", variant: "destructive" })
-      return null
+    const json = await res.json()
+    if (res.ok && json?.record) {
+      setItems((prev) => prev.map((p) => (p.id === id ? json.record : p)))
     }
-    setItems((prev) => prev.map((p) => (p.id === id ? data.item : p)))
-    return data.item as SafetyCheckInPayload
   }
-
-  async function claim(item: SafetyCheckInPayload) {
-    await patch(item.id, {
-      assignment: {
-        responderId: name,
-        responderName: name,
-        state: "claimed",
-      },
-    })
-  }
-  async function enRoute(item: SafetyCheckInPayload) {
-    await patch(item.id, {
-      assignment: {
-        responderId: name,
-        responderName: name,
-        state: "en_route",
-      },
-    })
-  }
-  async function arrived(item: SafetyCheckInPayload) {
-    await patch(item.id, {
-      assignment: {
-        responderId: name,
-        responderName: name,
-        state: "arrived",
-      },
-    })
-  }
-  async function completed(item: SafetyCheckInPayload) {
-    await patch(item.id, {
-      assignment: {
-        responderId: name,
-        responderName: name,
-        state: "completed",
-      },
-    })
-  }
-
-  const needHelpCount = items.filter((i) => i.status === "need_help").length
-  const assignedCount = items.filter((i) => i.assignment?.state === "claimed" || i.assignment?.state === "en_route").length
-  const completedCount = items.filter((i) => i.assignment?.state === "completed").length
-  const progress = items.length ? Math.round((completedCount / items.length) * 100) : 0
 
   return (
     <div className="space-y-6">
-      {/* Header summary */}
-      <Card className="bg-stone-900 text-white border-stone-800">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-4 rounded-lg bg-red-700/40 border border-red-600">
-              <div className="text-sm opacity-80">Open Help Requests</div>
-              <div className="text-3xl font-bold">{needHelpCount}</div>
-            </div>
-            <div className="p-4 rounded-lg bg-amber-700/40 border border-amber-600">
-              <div className="text-sm opacity-80">Assigned</div>
-              <div className="text-3xl font-bold">{assignedCount}</div>
-            </div>
-            <div className="p-4 rounded-lg bg-emerald-700/40 border border-emerald-600">
-              <div className="text-sm opacity-80">Completed</div>
-              <div className="text-3xl font-bold">{completedCount}</div>
-            </div>
-            <div className="p-4 rounded-lg bg-stone-800 border border-stone-700">
-              <div className="text-sm opacity-80 mb-1">Ops Progress</div>
-              <Progress value={progress} />
-              <div className="text-xs opacity-70 mt-1">{progress}% complete</div>
-            </div>
+      <Card className="border-l-8 border-l-blue-600">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-blue-700" />
+            Responder Portal
+          </CardTitle>
+          <CardDescription>Live feed of civilian check-ins with assignment workflow.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+            <Stat label="Total" value={summary.total} />
+            <Stat label="Unassigned" value={summary.unassigned} />
+            <Stat label="Claimed" value={summary.claimed} />
+            <Stat label="En Route" value={summary.en_route} />
+            <Stat label="Arrived" value={summary.arrived} />
+            <Stat label="Completed" value={summary.completed} />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <Badge className="bg-amber-100 text-amber-800 border-2 border-amber-600">
+              <AlertTriangle className="h-3 w-3 mr-1" /> Need Help: {summary.need_help}
+            </Badge>
+            <Badge className="bg-red-100 text-red-800 border-2 border-red-600">
+              <MapPin className="h-3 w-3 mr-1" /> Can't Evacuate: {summary.cant_evacuate}
+            </Badge>
           </div>
         </CardContent>
       </Card>
 
-      {/* Controls */}
-      <Card>
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-stone-700" />
-            <span className="font-medium">Responder Name</span>
-            <Input value={name} onChange={(e) => setName(e.target.value)} className="w-48" />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={filter === "all" ? "default" : "outline"}
-              onClick={() => setFilter("all")}
-              className={filter === "all" ? "bg-stone-900" : ""}
-            >
-              All
-            </Button>
-            <Button
-              variant={filter === "need_help" ? "default" : "outline"}
-              onClick={() => setFilter("need_help")}
-              className={filter === "need_help" ? "bg-red-600" : ""}
-            >
-              Need Help
-            </Button>
-            <Button
-              variant={filter === "cant_evacuate" ? "default" : "outline"}
-              onClick={() => setFilter("cant_evacuate")}
-              className={filter === "cant_evacuate" ? "bg-amber-600" : ""}
-            >
-              Can't Evacuate
-            </Button>
-            <Button
-              variant={filter === "safe" ? "default" : "outline"}
-              onClick={() => setFilter("safe")}
-              className={filter === "safe" ? "bg-emerald-600" : ""}
-            >
-              Safe
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <UserSearch className="w-5 h-5 text-stone-700" />
-            <Input
-              placeholder="Search notes, alias, territory"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-64"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filtered.map((item) => (
-          <Card key={item.id}>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {!loading && items.length === 0 && (
+          <Card>
+            <CardContent className="p-6 text-sm text-slate-600">
+              No check-ins yet. Ask a participant to submit via Civilian Portal.
+            </CardContent>
+          </Card>
+        )}
+        {items.map((it) => (
+          <Card key={it.id} className="border-2 border-slate-200">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {item.status === "need_help" ? (
-                    <Hand className="w-5 h-5 text-red-600" />
-                  ) : item.status === "cant_evacuate" ? (
-                    <CircleDot className="w-5 h-5 text-amber-600" />
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">
+                  {it.status === "safe" ? (
+                    <span className="text-emerald-700 font-semibold">I'm Safe</span>
+                  ) : it.status === "need_help" ? (
+                    <span className="text-amber-700 font-semibold">Need Help</span>
                   ) : (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    <span className="text-red-700 font-semibold">Can't Evacuate</span>
                   )}
-                  <span className="text-base">
-                    {item.status === "need_help"
-                      ? "Need Help"
-                      : item.status === "cant_evacuate"
-                        ? "Can't Evacuate"
-                        : "Marked Safe"}
-                  </span>
-                </div>
-                <Badge variant="outline">
-                  {(item.assignment?.state || "unassigned").replace("_", " ")}
-                </Badge>
-              </CardTitle>
+                </CardTitle>
+                <Badge className="bg-white border-2 border-slate-400 text-slate-700">{it.id.slice(0, 6)}</Badge>
+              </div>
+              <CardDescription>
+                {it.name ? it.name : "Anonymous"}
+                {it.contact ? ` • ${it.contact}` : ""}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <div className="font-medium">{item.userAlias || "Anonymous"}</div>
-                <div className="text-muted-foreground">{timeSince(item.createdAt)}</div>
-              </div>
-              {item.note && <div className="text-sm">{item.note}</div>}
-              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                {item.location ? (
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="w-4 h-4" /> {item.location.lat.toFixed(3)},{" "}
-                    {item.location.lng.toFixed(3)}
-                  </span>
+              <div className="text-sm text-slate-700">
+                {it.location ? (
+                  <>
+                    <MapPin className="inline h-4 w-4 mr-1 text-blue-700" />
+                    {it.location.lat.toFixed(4)}, {it.location.lng.toFixed(4)} {it.location.accuracy ? `• ±${Math.round(it.location.accuracy)}m` : ""}
+                    {it.location.territory ? ` • ${it.location.territory}` : ""}
+                  </>
                 ) : (
-                  <span>No location</span>
+                  "No location shared"
                 )}
-                {typeof item.dependents === "number" && (
-                  <span>Dependents: {item.dependents}</span>
-                )}
-                {item.mobilityNeeds && <span>Mobility needs</span>}
-                {item.language && <span>Lang: {item.language}</span>}
-                {item.territory && <span>Territory: {item.territory}</span>}
               </div>
-
-              {/* Actions */}
+              {it.notes && <div className="text-sm text-slate-600 line-clamp-3">{it.notes}</div>}
               <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => claim(item)}
-                  disabled={!!item.assignment?.responderId && item.assignment?.state !== "unassigned"}
-                >
-                  <Shield className="w-4 h-4 mr-1" /> Claim
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => enRoute(item)}
-                  disabled={item.assignment?.state === "en_route" || item.assignment?.state === "arrived" || item.assignment?.state === "completed"}
-                >
-                  <Activity className="w-4 h-4 mr-1" /> En Route
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => arrived(item)}
-                  disabled={item.assignment?.state === "arrived" || item.assignment?.state === "completed"}
-                >
-                  <PhoneCall className="w-4 h-4 mr-1" /> Arrived
-                </Button>
-                <Button
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                  onClick={() => completed(item)}
-                  disabled={item.assignment?.state === "completed"}
-                >
-                  <Check className="w-4 h-4 mr-1" /> Complete
-                </Button>
+                <Badge className="bg-slate-100 text-slate-700 border-2 border-slate-400">Mobility: {it.mobility ?? "n/a"}</Badge>
+                {(it.dependents?.children || it.dependents?.elders || it.dependents?.pets) && (
+                  <Badge className="bg-slate-100 text-slate-700 border-2 border-slate-400">
+                    Dependents: {[it.dependents.children ? "Children" : null, it.dependents.elders ? "Elders" : null, it.dependents.pets ? "Pets" : null].filter(Boolean).join(", ")}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {it.assignmentStatus === "unassigned" && (
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white border-2 border-black" onClick={() => updateStatus(it.id, "claimed", "Responder #1")}>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Claim
+                  </Button>
+                )}
+                {it.assignmentStatus === "claimed" && (
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white border-2 border-black" onClick={() => updateStatus(it.id, "en_route", it.assignedTo ?? "Responder #1")}>
+                    En Route
+                  </Button>
+                )}
+                {it.assignmentStatus === "en_route" && (
+                  <Button className="bg-amber-600 hover:bg-amber-700 text-white border-2 border-black" onClick={() => updateStatus(it.id, "arrived", it.assignedTo ?? "Responder #1")}>
+                    Arrived
+                  </Button>
+                )}
+                {it.assignmentStatus === "arrived" && (
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white border-2 border-black" onClick={() => updateStatus(it.id, "completed", it.assignedTo ?? "Responder #1")}>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Completed
+                  </Button>
+                )}
+                {it.assignedTo && <Badge className="bg-white border-2 border-slate-400 text-slate-700">{it.assignedTo} • {it.assignmentStatus.replace("_", " ")}</Badge>}
               </div>
             </CardContent>
           </Card>
         ))}
-        {!filtered.length && !loading && (
-          <div className="text-sm text-muted-foreground">No records match your filters.</div>
-        )}
       </div>
+    </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="p-3 rounded-lg border-2 border-slate-200 bg-white text-center">
+      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-xs text-slate-600">{label}</div>
     </div>
   )
 }
