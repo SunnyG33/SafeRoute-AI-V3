@@ -1,8 +1,11 @@
 import ResponderDashboard from "@/components/responder/responder-dashboard"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Activity, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, Activity, ShieldAlert, BookText } from 'lucide-react'
 import AlertFeed from "@/components/bodyguard/alert-feed"
+import { LegalBanner } from "@/components/common/legal-banner"
+import { EvidenceBadge } from "@/components/common/evidence-badge"
+import LanguageSwitcher from "@/components/common/language-switcher"
 
 export default function ResponderPortalPage() {
   return (
@@ -31,10 +34,20 @@ export default function ResponderPortalPage() {
                 BodyGuard
               </Button>
             </Link>
+            <EvidenceBadge moduleKey="responder-portal" />
+            <LanguageSwitcher />
+            <Link href="/about/master-context">
+              <Button variant="outline" className="border-2">
+                <BookText className="h-4 w-4 mr-2" />
+                Master Context
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
-
+      <section className="container mx-auto px-4 pt-4">
+        <LegalBanner context={["beta","emergency","routing","ai-assist"]} />
+      </section>
       <section className="container mx-auto px-4 py-6">
         <ResponderDashboard />
       </section>

@@ -2,8 +2,11 @@ import TLRTBanner from "@/components/common/tlrt-banner"
 import SafetyCheckIn from "@/components/civilian/safety-check-in"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Heart, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, Heart, ShieldAlert, BookText } from 'lucide-react'
 import AlertFeed from "@/components/bodyguard/alert-feed"
+import { LegalBanner } from "@/components/common/legal-banner"
+import { EvidenceBadge } from "@/components/common/evidence-badge"
+import LanguageSwitcher from "@/components/common/language-switcher"
 
 export default function CivilianPortalPage() {
   return (
@@ -32,9 +35,21 @@ export default function CivilianPortalPage() {
                 Open Hero Mode
               </Button>
             </Link>
+            <EvidenceBadge moduleKey="civilian-portal" />
+            <LanguageSwitcher />
+            <Link href="/about/master-context">
+              <Button variant="outline" className="border-2">
+                <BookText className="h-4 w-4 mr-2" />
+                Master Context
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
+
+      <section className="container mx-auto px-4 pt-4">
+        <LegalBanner context={["beta","emergency","ai-assist"]} />
+      </section>
 
       <section className="container mx-auto px-4 py-6">
         <TLRTBanner className="mb-6" />

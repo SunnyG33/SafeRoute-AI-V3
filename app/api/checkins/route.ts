@@ -1,71 +1,91 @@
 import { NextRequest, NextResponse } from "next/server"
-import type { Checkin } from "@/types/checkin"
+import { type Checkin, type CheckinStatus, type AssignmentStatus } from "@/types/checkin"
 
-let DB: Checkin[] = []
+type NewCheckinBody = {
+  status: CheckinStatus
+  name?: string
+  contact?: string
+  language?: string
+  notes?: string
+  mobility?: Checkin["mobility"]
+  dependents?: Checkin["dependents"]
+  location: Checkin["location"]
+}
+
+const CHECKINS: Checkin[] = []
 
 function id() {
-  return Math.random().toString(36).slice(2, 10)
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID()
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
+}
+
+function now() {
+  return Date.now()
 }
 
 export async function GET() {
-  const data = [...DB].sort((a, b) => b.createdAt - a.createdAt)
-  return NextResponse.json({ data })
+  const data = [...CHECKINS].sort((a, b) => b.createdAt - a.createdAt)
+  return NextResponse.json({ ok: true, data })
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const now = Date.now()
+    const body = (await req.json()) as NewCheckinBody
+    if (!body || !body.status) {
+      return NextResponse.json({ ok: false, error: "Invalid payload" }, { status: 400 })
+    }
 
     const record: Checkin = {
       id: id(),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: now(),
+      updatedAt: now(),
       status: body.status,
-      name: body.name?.slice(0, 80),
-      contact: body.contact?.slice(0, 120),
-      language: body.language?.slice(0, 40),
+      name: body.name?.slice(0, 140),
+      contact: body.contact?.slice(0, 140),
+      language: body.language?.slice(0, 80),
       notes: body.notes?.slice(0, 2000),
-      location: body.location ?? null,
-      mobility: body.mobility,
-      dependents: {
-        children: !!body?.dependents?.children,
-        elders: !!body?.dependents?.elders,
-        pets: !!body?.dependents?.pets,
-      },
+      location: body.location
+        ? {
+            lat: Number(body.location.lat),
+            lng: Number(body.location.lng),
+            accuracy: body.location.accuracy ? Number(body.location.accuracy) : undefined,
+            territory: body.location.territory,
+          }
+        : null,
+      mobility: body.mobility ?? "none",
+      dependents: body.dependents ?? { children: false, elders: false, pets: false },
       assignedTo: null,
       assignmentStatus: "unassigned",
     }
 
-    DB.unshift(record)
-    return NextResponse.json({ ok: true, record }, { status: 201 })
-  } catch {
-    return NextResponse.json({ ok: false, error: "Invalid payload" }, { status: 400 })
+    CHECKINS.unshift(record)
+    return NextResponse.json({ ok: true, record })
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e?.message || "Unexpected error" }, { status: 500 })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { id: checkinId } = body as { id?: string }
-    if (!checkinId) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 })
-
-    const idx = DB.findIndex((c) => c.id === checkinId)
-    if (idx === -1) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 })
-
-    const current = DB[idx]
-    const updated: Checkin = {
-      ...current,
-      assignedTo: body.assignedTo !== undefined ? body.assignedTo : current.assignedTo,
-      assignmentStatus:
-        body.assignmentStatus !== undefined ? body.assignmentStatus : current.assignmentStatus,
-      updatedAt: Date.now(),
-      notes: body.notes !== undefined ? String(body.notes).slice(0, 2000) : current.notes,
+    const body = (await req.json()) as { id: string; assignmentStatus?: AssignmentStatus; assignedTo?: string | null }
+    if (!body?.id) {
+      return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 })
+    }
+    const idx = CHECKINS.findIndex((c) => c.id === body.id)
+    if (idx === -1) {
+      return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 })
     }
 
-    DB[idx] = updated
-    return NextResponse.json({ ok: true, record: updated })
-  } catch {
-    return NextResponse.json({ ok: false, error: "Invalid payload" }, { status: 400 })
+    if (body.assignmentStatus) {
+      CHECKINS[idx].assignmentStatus = body.assignmentStatus
+    }
+    if (typeof body.assignedTo !== "undefined") {
+      CHECKINS[idx].assignedTo = body.assignedTo
+    }
+    CHECKINS[idx].updatedAt = now()
+
+    return NextResponse.json({ ok: true, record: CHECKINS[idx] })
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e?.message || "Unexpected error" }, { status: 500 })
   }
 }
