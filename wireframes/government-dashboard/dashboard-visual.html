@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute AI - Government Emergency Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #f59e0b;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: #334155;
+            color: white;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #1e293b;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #dcfce7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #166534;
+            font-weight: 500;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .stat-card.critical {
+            border-left-color: #dc2626;
+        }
+        
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .stat-card.success {
+            border-left-color: #059669;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .emergency-list {
+            list-style: none;
+        }
+        
+        .emergency-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .emergency-item:last-child {
+            border-bottom: none;
+        }
+        
+        .emergency-info h4 {
+            margin-bottom: 5px;
+            color: #1e293b;
+        }
+        
+        .emergency-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .priority-critical {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .priority-high {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .priority-medium {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .map-placeholder {
+            height: 300px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #dc2626;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .marker-1 { top: 30%; left: 25%; }
+        .marker-2 { top: 60%; left: 70%; }
+        .marker-3 { top: 45%; left: 50%; }
+        
+        .community-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .community-table th,
+        .community-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .community-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .status-online {
+            color: #059669;
+        }
+        
+        .status-offline {
+            color: #dc2626;
+        }
+        
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .activity-emergency {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .activity-hero {
+            background: #ecfdf5;
+            color: #059669;
+        }
+        
+        .activity-system {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        
+        .activity-content h5 {
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        
+        .activity-content p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .activity-time {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="logo">🛡️ SafeRoute AI</div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active">📊 Dashboard</a></li>
+                <li><a href="#">🚨 Active Emergencies</a></li>
+                <li><a href="#">🗺️ Regional Map</a></li>
+                <li><a href="#">👥 Community Heroes</a></li>
+                <li><a href="#">📡 Starlink Network</a></li>
+                <li><a href="#">📈 Analytics</a></li>
+                <li><a href="#">⚙️ Settings</a></li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1>Emergency Management Dashboard</h1>
+                <div class="status-indicator">
+                    <span>🟢</span>
+                    <span>All Systems Operational</span>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card critical">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Critical Emergencies</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">High Priority Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">27</div>
+                    <div class="stat-label">Active Heroes</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Starlink Uptime</div>
+                </div>
+            </div>
+            
+            <div class="content-grid">
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Active Emergencies</h3>
+                            <button class="btn">View All</button>
+                        </div>
+                        <div class="card-content">
+                            <ul class="emergency-list">
+                                <li class="emergency-item">
+                                    <div class="emergency-info">
+                                        <h4>🔥 Wildfire - North Shore</h4>
+                                        <p>12 Heroes responding • 450 people affected</p>
+                                        <p>📍 Coordinates: 49.3°N, 123.1°W</p>
+                                    </div>
+                                    <span class="priority-badge priority-critical">CRITICAL</span>
+                                </li>
+                                <li class="emergency-item">
+                                    <div class="emergency-info">
+                                        <h4>🏥 Medical Emergency - Downtown</h4>
+                                        <p>3 Heroes responding • 1 person affected</p>
+                                        <p>📍 Community Center</p>
+                                    </div>
+                                    <span class="priority-badge priority-high">HIGH</span>
+                                </li>
+                                <li class="emergency-item">
+                                    <div class="emergency-info">
+                                        <h4>🌊 Flood Warning - Fraser Valley</h4>
+                                        <p>8 Heroes on standby • 1,200 people at risk</p>
+                                        <p>📍 Multiple locations</p>
+                                    </div>
+                                    <span class="priority-badge priority-medium">MEDIUM</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Regional Emergency Map</h3>
+                            <button class="btn">Full Screen</button>
+                        </div>
+                        <div class="card-content">
+                            <div class="map-placeholder">
+                                <span>🗺️ Interactive Emergency Map</span>
+                                <div class="map-marker marker-1" title="Wildfire - Critical"></div>
+                                <div class="map-marker marker-2" title="Flood Warning - Medium"></div>
+                                <div class="map-marker marker-3" title="Medical Emergency - High"></div>
+                            </div>
+                            <div style="display: flex; gap: 20px; font-size: 14px;">
+                                <span>🔴 Critical (2)</span>
+                                <span>🟡 High (5)</span>
+                                <span>🔵 Medium (12)</span>
+                                <span>🟢 Low (8)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Indigenous Communities Status</h3>
+                            <button class="btn">Export Report</button>
+                        </div>
+                        <div class="card-content">
+                            <table class="community-table">
+                                <thead>
+                                    <tr>
+                                        <th>Community</th>
+                                        <th>Population</th>
+                                        <th>Heroes</th>
+                                        <th>Connectivity</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Squamish Nation</td>
+                                        <td>4,200</td>
+                                        <td>8</td>
+                                        <td class="status-online">📡 Online</td>
+                                        <td><span class="priority-badge priority-medium">Safe</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tsilhqot'in Nation</td>
+                                        <td>3,800</td>
+                                        <td>6</td>
+                                        <td class="status-online">📡 Online</td>
+                                        <td><span class="priority-badge priority-critical">Alert</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Haida Nation</td>
+                                        <td>2,500</td>
+                                        <td>4</td>
+                                        <td class="status-offline">📡 Limited</td>
+                                        <td><span class="priority-badge priority-high">Watch</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="card-content">
+                            <button class="btn" style="width: 100%; margin-bottom: 10px;">🚨 Broadcast Alert</button>
+                            <button class="btn" style="width: 100%; margin-bottom: 10px;">👥 Deploy Heroes</button>
+                            <button class="btn" style="width: 100%; margin-bottom: 10px;">📡 Check Starlink</button>
+                            <button class="btn btn-danger" style="width: 100%;">🆘 Emergency Protocol</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Activity</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="activity-feed">
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-emergency">🚨</div>
+                                    <div class="activity-content">
+                                        <h5>New Emergency Reported</h5>
+                                        <p>Wildfire detected in North Shore region</p>
+                                        <div class="activity-time">2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-hero">👥</div>
+                                    <div class="activity-content">
+                                        <h5>Heroes Deployed</h5>
+                                        <p>8 community heroes responding to emergency</p>
+                                        <div class="activity-time">5 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-system">📡</div>
+                                    <div class="activity-content">
+                                        <h5>Starlink Connection Restored</h5>
+                                        <p>Full connectivity restored to Haida Nation</p>
+                                        <div class="activity-time">15 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-hero">✅</div>
+                                    <div class="activity-content">
+                                        <h5>Emergency Resolved</h5>
+                                        <p>Medical emergency in downtown area resolved</p>
+                                        <div class="activity-time">1 hour ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">System Performance</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Starlink Uptime</span>
+                                    <span>98%</span>
+                                </div>
+                                <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #059669; height: 100%; width: 98%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Hero Response Rate</span>
+                                    <span>94%</span>
+                                </div>
+                                <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #3b82f6; height: 100%; width: 94%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Alert Delivery</span>
+                                    <span>99%</span>
+                                </div>
+                                <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #059669; height: 100%; width: 99%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

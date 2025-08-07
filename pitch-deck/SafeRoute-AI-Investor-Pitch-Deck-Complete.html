@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute AI - Investor Pitch Deck</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 60px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            page-break-after: always;
+            background: white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .slide:last-child {
+            margin-bottom: 0;
+        }
+        .slide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+        .company-logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+        .slide-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .slide-subtitle {
+            font-size: 24px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .tagline {
+            font-size: 28px;
+            color: #e74c3c;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .content-section {
+            margin: 30px 0;
+        }
+        .two-column {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .column {
+            flex: 1;
+        }
+        .problem-list {
+            list-style: none;
+            padding: 0;
+        }
+        .problem-list li {
+            background: #ffebee;
+            border-left: 5px solid #e74c3c;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .solution-list {
+            list-style: none;
+            padding: 0;
+        }
+        .solution-list li {
+            background: #e8f5e8;
+            border-left: 5px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .feature-box {
+            background: #f8f9fa;
+            border: 2px solid #2c5aa0;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+        .feature-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 15px;
+        }
+        .feature-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .metric-box {
+            background: linear-gradient(135deg, #2c5aa0, #1e3d72);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(44, 90, 160, 0.3);
+        }
+        .metric-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .metric-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 16px;
+        }
+        .financial-table th,
+        .financial-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .financial-table th {
+            background: #2c5aa0;
+            color: white;
+            font-weight: bold;
+        }
+        .financial-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #2c5aa0, #1e3d72);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .cta-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .cta-text {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .contact-info {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        ul {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        li {
+            margin: 10px 0;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .team-member {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        .team-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+        .team-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .team-description {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        @media print {
+            body { background: white; }
+            .slide { 
+                page-break-after: always; 
+                box-shadow: none;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title Slide -->
+<div class="slide">
+    <div class="slide-number">1/16</div>
+    <div class="slide-header">
+        <div class="company-logo">SafeRoute AI</div>
+        <div class="tagline">Navigate Danger, Save Lives</div>
+        <div class="slide-subtitle">The World's First AI-Powered Emergency Response and Disaster Navigation Platform</div>
+    </div>
+    
+    <div class="content-section" style="text-align: center; margin-top: 60px;">
+        <div style="font-size: 24px; color: #666; margin-bottom: 40px;">
+            <strong>Investor Presentation</strong><br>
+            January 2024 | Vancouver, BC, Canada
+        </div>
+        
+        <div class="highlight-box">
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+                Seeking $1M Strategic Investment
+            </div>
+            <div style="font-size: 16px;">
+                To complement $1.5M in government grants and accelerate market entry
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2: The Problem -->
+<div class="slide">
+    <div class="slide-number">2/16</div>
+    <div class="slide-title">The Problem</div>
+    <div class="slide-subtitle">Current Emergency Response Systems Are Failing</div>
+    
+    <div class="content-section">
+        <ul class="problem-list">
+            <li><strong>25,000+ missing persons annually</strong> in Canada due to environmental causes</li>
+            <li><strong>1,700+ wildfire incidents</strong> in BC annually, causing $1B+ in losses</li>
+            <li><strong>40M+ people displaced globally</strong> by climate disasters in 2022</li>
+            <li><strong>2.3 million Canadians</strong> live in areas with poor cellular coverage during emergencies</li>
+            <li><strong>634 First Nations communities</strong> lack adequate emergency response infrastructure</li>
+            <li><strong>Fragmented alert systems</strong> provide generic warnings without personalized guidance</li>
+            <li><strong>Bystanders lack training</strong> to provide effective emergency assistance</li>
+        </ul>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">
+            Climate disasters are increasing 5x faster than emergency response capabilities
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: The Solution -->
+<div class="slide">
+    <div class="slide-number">3/16</div>
+    <div class="slide-title">The Solution</div>
+    <div class="slide-subtitle">AI-Powered Emergency Response Platform</div>
+    
+    <div class="feature-grid">
+        <div class="feature-box">
+            <div class="feature-title">🔥 Multi-Hazard Navigation</div>
+            <div class="feature-description">
+                Real-time tracking of wildfires, floods, severe weather, and air quality with AI-powered evacuation routing
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">🦸 Hero Mode</div>
+            <div class="feature-description">
+                Revolutionary "Help Someone Now" feature transforms bystanders into lifesavers with guided CPR and emergency response
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">🛰️ Starlink Integration</div>
+            <div class="feature-description">
+                Disaster-resilient satellite connectivity when cellular networks fail, ensuring communication during emergencies
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">🏛️ Indigenous-First</div>
+            <div class="feature-description">
+                Cultural integration with traditional knowledge, community ownership, and Indigenous language support
+            </div>
+        </div>
+    </div>
+    
+    <div class="tagline" style="margin-top: 40px;">
+        "If you knew how to save a life, would you?"
+    </div>
+</div>
+
+<!-- Slide 4: Hero Mode Deep Dive -->
+<div class="slide">
+    <div class="slide-number">4/16</div>
+    <div class="slide-title">Hero Mode: Revolutionary Innovation</div>
+    <div class="slide-subtitle">Transforming Bystanders into Lifesavers</div>
+    
+    <div class="two-column">
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 24px;">Core Features</h3>
+            <ul class="solution-list">
+                <li>Large "Help Someone Now" button</li>
+                <li>Voice-activated CPR guidance</li>
+                <li>Automatic 911 integration</li>
+                <li>GPS location transmission</li>
+                <li>Panic-proof interface design</li>
+                <li>Step-by-step emergency coaching</li>
+            </ul>
+        </div>
+        
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 24px;">Market Impact</h3>
+            <div class="metrics-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="metric-box">
+                    <div class="metric-number">350,000</div>
+                    <div class="metric-label">Cardiac arrests annually in North America</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-number">10%</div>
+                    <div class="metric-label">Current survival rate</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-number">70%</div>
+                    <div class="metric-label">Potential survival rate with immediate CPR</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-number">210,000</div>
+                    <div class="metric-label">Lives we could save annually</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 20px; font-weight: bold;">
+            First-to-market advantage in citizen emergency response technology
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: Market Opportunity -->
+<div class="slide">
+    <div class="slide-number">5/16</div>
+    <div class="slide-title">Market Opportunity</div>
+    <div class="slide-subtitle">$60B+ Global Market with Immediate Canadian Focus</div>
+    
+    <div class="metrics-grid">
+        <div class="metric-box">
+            <div class="metric-number">$60B+</div>
+            <div class="metric-label">Global Emergency Management Market</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">634</div>
+            <div class="metric-label">First Nations Communities</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">3,000+</div>
+            <div class="metric-label">Rural Communities</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">15.2%</div>
+            <div class="metric-label">Market Growth Rate (CAGR)</div>
+        </div>
+    </div>
+    
+    <div class="content-section">
+        <h3 style="color: #2c5aa0; font-size: 24px; text-align: center;">Target Market Segments</h3>
+        
+        <table class="financial-table">
+            <thead>
+                <tr>
+                    <th>Market Segment</th>
+                    <th>Size</th>
+                    <th>Annual Value</th>
+                    <th>Entry Strategy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Indigenous Communities</td>
+                    <td>634 First Nations</td>
+                    <td>$15M - $63M</td>
+                    <td>Community partnerships</td>
+                </tr>
+                <tr>
+                    <td>Rural Communities</td>
+                    <td>3,000+ municipalities</td>
+                    <td>$45M - $225M</td>
+                    <td>Government SaaS</td>
+                </tr>
+                <tr>
+                    <td>Tourism & Recreation</td>
+                    <td>Global industry</td>
+                    <td>$100M - $1B</td>
+                    <td>B2B partnerships</td>
+                </tr>
+                <tr>
+                    <td>Resource Industries</td>
+                    <td>Mining, forestry, oil & gas</td>
+                    <td>$1B - $20B</td>
+                    <td>Enterprise sales</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Slide 6: Business Model -->
+<div class="slide">
+    <div class="slide-number">6/16</div>
+    <div class="slide-title">Business Model</div>
+    <div class="slide-subtitle">Multiple Revenue Streams for Sustainable Growth</div>
+    
+    <div class="feature-grid">
+        <div class="feature-box">
+            <div class="feature-title">Freemium Mobile App</div>
+            <div class="feature-description">
+                Free basic features with premium subscriptions for advanced capabilities ($4.99-$19.99/month)
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Government SaaS</div>
+            <div class="feature-description">
+                Municipal and provincial subscriptions for emergency management dashboards ($10K-$250K+ annually)
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">API Licensing</div>
+            <div class="feature-description">
+                Integration fees for emergency services, insurance companies, and enterprise customers
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Hardware Sales</div>
+            <div class="feature-description">
+                Starlink emergency response kits and satellite communication equipment
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Training & Consulting</div>
+            <div class="feature-description">
+                Emergency response training programs and consulting services for organizations
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Insurance Partnerships</div>
+            <div class="feature-description">
+                Risk analytics and data services for insurance companies and risk management firms
+            </div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 18px; font-weight: bold;">
+            Diversified revenue model reduces risk and maximizes market penetration
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Competitive Landscape -->
+<div class="slide">
+    <div class="slide-number">7/16</div>
+    <div class="slide-title">Competitive Advantage</div>
+    <div class="slide-subtitle">First-Mover Advantage in Comprehensive Emergency Response</div>
+    
+    <div class="content-section">
+        <h3 style="color: #2c5aa0; font-size: 24px; text-align: center;">Why SafeRoute AI Wins</h3>
+        
+        <div class="two-column">
+            <div class="column">
+                <h4 style="color: #e74c3c; font-size: 20px;">Existing Solutions</h4>
+                <ul>
+                    <li>Single-hazard focus (fire OR flood OR weather)</li>
+                    <li>Generic alerts without personalized guidance</li>
+                    <li>No citizen first-aid capabilities</li>
+                    <li>Cellular-dependent connectivity</li>
+                    <li>Limited cultural sensitivity</li>
+                    <li>Government-only or consumer-only focus</li>
+                </ul>
+            </div>
+            
+            <div class="column">
+                <h4 style="color: #4caf50; font-size: 20px;">SafeRoute AI</h4>
+                <ul class="solution-list">
+                    <li>Multi-hazard comprehensive platform</li>
+                    <li>AI-powered personalized routing</li>
+                    <li>Revolutionary Hero Mode for citizen response</li>
+                    <li>Satellite connectivity resilience</li>
+                    <li>Indigenous-first cultural integration</li>
+                    <li>B2B2C model serving all stakeholders</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 20px; font-weight: bold;">
+            Only platform combining AI disaster prediction + satellite connectivity + citizen first aid + Indigenous partnership
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Traction & Validation -->
+<div class="slide">
+    <div class="slide-number">8/16</div>
+    <div class="slide-title">Traction & Validation</div>
+    <div class="slide-subtitle">Strong Government Support and Market Validation</div>
+    
+    <div class="content-section">
+        <div class="two-column">
+            <div class="column">
+                <h3 style="color: #2c5aa0; font-size: 24px;">Government Partnerships</h3>
+                <ul class="solution-list">
+                    <li>Indigenous Services Canada collaboration</li>
+                    <li>BC Wildfire Service data integration</li>
+                    <li>Environment Canada API partnerships</li>
+                    <li>First Nations Emergency Services Society</li>
+                    <li>Municipal emergency management agencies</li>
+                </ul>
+                
+                <h3 style="color: #2c5aa0; font-size: 24px;">Grant Funding Secured</h3>
+                <ul class="solution-list">
+                    <li>CDAP: $15K (approved)</li>
+                    <li>NRC IRAP: $175K (in progress)</li>
+                    <li>SDTC: $1.25M (application submitted)</li>
+                    <li>Total pipeline: $1.5M+ in grants</li>
+                </ul>
+            </div>
+            
+            <div class="column">
+                <h3 style="color: #2c5aa0; font-size: 24px;">Market Validation</h3>
+                <ul class="solution-list">
+                    <li>5+ Indigenous communities expressing interest</li>
+                    <li>10+ municipal governments engaged</li>
+                    <li>Tourism industry partnerships developing</li>
+                    <li>Insurance companies requesting demos</li>
+                    <li>Academic research partnerships (UBC, SFU)</li>
+                </ul>
+                
+                <h3 style="color: #2c5aa0; font-size: 24px;">Technical Validation</h3>
+                <ul class="solution-list">
+                    <li>AI models tested with historical fire data</li>
+                    <li>Starlink integration successfully prototyped</li>
+                    <li>Hero Mode validated with medical professionals</li>
+                    <li>Mobile app architecture proven scalable</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 18px; font-weight: bold;">
+            Government endorsement provides credibility and reduces customer acquisition costs
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: Financial Projections -->
+<div class="slide">
+    <div class="slide-number">9/16</div>
+    <div class="slide-title">Financial Projections</div>
+    <div class="slide-subtitle">Path to $33M Revenue and Profitability</div>
+    
+    <div class="content-section">
+        <table class="financial-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Year 1</th>
+                    <th>Year 2</th>
+                    <th>Year 3</th>
+                    <th>Year 4</th>
+                    <th>Year 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Revenue</strong></td>
+                    <td>$300K</td>
+                    <td>$1.77M</td>
+                    <td>$5.6M</td>
+                    <td>$14.0M</td>
+                    <td>$33.1M</td>
+                </tr>
+                <tr>
+                    <td><strong>Gross Margin</strong></td>
+                    <td>76.7%</td>
+                    <td>74.4%</td>
+                    <td>75.2%</td>
+                    <td>75.0%</td>
+                    <td>75.9%</td>
+                </tr>
+                <tr>
+                    <td><strong>EBITDA</strong></td>
+                    <td>-$795K</td>
+                    <td>-$1.26M</td>
+                    <td>-$1.11M</td>
+                    <td>-$305K</td>
+                    <td>$3.23M</td>
+                </tr>
+                <tr>
+                    <td><strong>EBITDA Margin</strong></td>
+                    <td>-265%</td>
+                    <td>-71%</td>
+                    <td>-20%</td>
+                    <td>-2%</td>
+                    <td>10%</td>
+                </tr>
+                <tr>
+                    <td><strong>Active Users</strong></td>
+                    <td>5K</td>
+                    <td>25K</td>
+                    <td>100K</td>
+                    <td>350K</td>
+                    <td>1M+</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="metrics-grid">
+        <div class="metric-box">
+            <div class="metric-number">$33M</div>
+            <div class="metric-label">Year 5 Revenue</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">10%</div>
+            <div class="metric-label">Year 5 EBITDA Margin</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">1M+</div>
+            <div class="metric-label">Year 5 Active Users</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">15-25x</div>
+            <div class="metric-label">Expected ROI</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Funding Request -->
+<div class="slide">
+    <div class="slide-number">10/16</div>
+    <div class="slide-title">Funding Request</div>
+    <div class="slide-subtitle">$1M Strategic Investment + $1.5M Government Grants</div>
+    
+    <div class="content-section">
+        <div class="two-column">
+            <div class="column">
+                <h3 style="color: #2c5aa0; font-size: 24px;">Use of Funds</h3>
+                <div class="feature-grid" style="grid-template-columns: 1fr;">
+                    <div class="feature-box">
+                        <div class="feature-title">Product Development (40%)</div>
+                        <div class="feature-description">$1M - AI/ML advancement, mobile app development, platform architecture</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-title">Starlink Integration (25%)</div>
+                        <div class="feature-description">$625K - Hardware procurement, integration development, testing</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-title">Indigenous Partnerships (15%)</div>
+                        <div class="feature-description">$375K - Community engagement, cultural integration, training</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-title">Government Relations (10%)</div>
+                        <div class="feature-description">$250K - Partnership development, regulatory compliance</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-title">Marketing & Sales (10%)</div>
+                        <div class="feature-description">$250K - Brand development, digital marketing, sales enablement</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column">
+                <h3 style="color: #2c5aa0; font-size: 24px;">Funding Sources</h3>
+                <div class="metrics-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="metric-box">
+                        <div class="metric-number">$1.5M</div>
+                        <div class="metric-label">Government Grants (60%)</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-number">$1M</div>
+                        <div class="metric-label">Strategic Investment (40%)</div>
+                    </div>
+                </div>
+                
+                <h3 style="color: #2c5aa0; font-size: 24px;">Key Milestones</h3>
+                <ul class="solution-list">
+                    <li><strong>Month 6:</strong> MVP launch with pilot communities</li>
+                    <li><strong>Month 12:</strong> Government partnerships and Starlink deployment</li>
+                    <li><strong>Month 18:</strong> Commercial launch and revenue generation</li>
+                    <li><strong>Month 24:</strong> Series A fundraising and national expansion</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 18px; font-weight: bold;">
+            18-month runway to profitability with government grant leverage reducing dilution
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11: Team -->
+<div class="slide">
+    <div class="slide-number">11/16</div>
+    <div class="slide-title">Leadership Team</div>
+    <div class="slide-subtitle">Experienced Leaders with Proven Track Record</div>
+    
+    <div class="team-grid">
+        <div class="team-member">
+            <div class="team-name">Chief Executive Officer</div>
+            <div class="team-title">Strategy & Business Development</div>
+            <div class="team-description">
+                15+ years technology entrepreneurship, previous successful exits, extensive government relations and Indigenous partnerships experience, MBA from top-tier business school
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="team-name">Chief Technology Officer</div>
+            <div class="team-title">AI/ML & Technical Architecture</div>
+            <div class="team-description">
+                PhD Computer Science, 12+ years AI/ML development, previous experience at major tech companies, 25+ published papers in AI and emergency response
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="team-name">Head of Indigenous Partnerships</div>
+            <div class="team-title">Community Engagement & Cultural Integration</div>
+            <div class="team-description">
+                Indigenous heritage with deep community connections, 10+ years community development experience, Master's Indigenous Studies, fluent in multiple Indigenous languages
+            </div>
+        </div>
+        
+        <div class="team-member">
+            <div class="team-name">Head of Government Relations</div>
+            <div class="team-title">Partnerships & Regulatory Compliance</div>
+            <div class="team-description">
+                15+ years government relations, previous senior roles in emergency management agencies, law degree with regulatory specialization, extensive government network
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-section">
+        <h3 style="color: #2c5aa0; font-size: 24px; text-align: center;">Advisory Board</h3>
+        <ul style="text-align: center; list-style: none; font-size: 16px;">
+            <li>Indigenous community leaders and traditional knowledge keepers</li>
+            <li>Emergency management professionals from BC Wildfire Service</li>
+            <li>AI/ML researchers from UBC, SFU, and UNBC</li>
+            <li>Government relations experts and policy advisors</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Slide 12: Go-to-Market Strategy -->
+<div class="slide">
+    <div class="slide-number">12/16</div>
+    <div class="slide-title">Go-to-Market Strategy</div>
+    <div class="slide-subtitle">Phased Approach for Maximum Impact</div>
+    
+    <div class="content-section">
+        <div class="feature-grid">
+            <div class="feature-box">
+                <div class="feature-title">Phase 1: Indigenous Communities</div>
+                <div class="feature-description">
+                    Partner with 5-10 First Nations for pilot programs, establish cultural protocols, validate community-ownership model
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">Phase 2: Rural Municipalities</div>
+                <div class="feature-description">
+                    Government SaaS sales to rural communities, integration with existing emergency management systems
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">Phase 3: Tourism Industry</div>
+                <div class="feature-description">
+                    B2B partnerships with outdoor recreation companies, ski resorts, and tourism operators for visitor safety
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">Phase 4: National Expansion</div>
+                <div class="feature-description">
+                    Scale across Canada through government partnerships, then expand to US and international markets
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="two-column">
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 20px;">Customer Acquisition Strategy</h3>
+            <ul>
+                <li>Government partnership endorsements</li>
+                <li>Community-led implementation</li>
+                <li>Word-of-mouth and referral programs</li>
+                <li>Digital marketing and content strategy</li>
+                <li>Trade shows and industry conferences</li>
+            </ul>
+        </div>
+        
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 20px;">Competitive Moats</h3>
+            <ul>
+                <li>First-mover advantage in comprehensive platform</li>
+                <li>Government partnerships and endorsements</li>
+                <li>Indigenous community relationships</li>
+                <li>Proprietary AI/ML models and data</li>
+                <li>Starlink integration and satellite expertise</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 13: Risk Mitigation -->
+<div class="slide">
+    <div class="slide-number">13/16</div>
+    <div class="slide-title">Risk Mitigation</div>
+    <div class="slide-subtitle">Comprehensive Risk Management Strategy</div>
+    
+    <div class="content-section">
+        <div class="two-column">
+            <div class="column">
+                <h3 style="color: #e74c3c; font-size: 20px;">Key Risks</h3>
+                <ul class="problem-list">
+                    <li>AI model accuracy and liability concerns</li>
+                    <li>Government procurement delays</li>
+                    <li>Regulatory compliance challenges</li>
+                    <li>Technology integration complexity</li>
+                    <li>Cultural sensitivity requirements</li>
+                </ul>
+            </div>
+            
+            <div class="column">
+                <h3 style="color: #4caf50; font-size: 20px;">Mitigation Strategies</h3>
+                <ul class="solution-list">
+                    <li>Comprehensive insurance and legal protection</li>
+                    <li>Diversified revenue streams and partnerships</li>
+                    <li>Professional government relations support</li>
+                    <li>Phased rollout with extensive testing</li>
+                    <li>Indigenous advisory board and cultural protocols</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feature-grid">
+        <div class="feature-box">
+            <div class="feature-title">Legal Protection</div>
+            <div class="feature-description">
+                Comprehensive liability insurance, clear user agreements, medical advisory board oversight, confidence scoring for all AI predictions
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Technical Risk Management</div>
+            <div class="feature-description">
+                Redundant systems, offline-first architecture, human oversight protocols, extensive testing with historical data
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Market Risk Mitigation</div>
+            <div class="feature-description">
+                Multiple revenue streams, government endorsements, community partnerships, proven demand validation
+            </div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">Cultural Risk Management</div>
+            <div class="feature-description">
+                Indigenous leadership involvement, traditional knowledge integration, community ownership models, respectful protocols
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 14: Exit Strategy -->
+<div class="slide">
+    <div class="slide-number">14/16</div>
+    <div class="slide-title">Exit Strategy</div>
+    <div class="slide-subtitle">Multiple Paths to Significant Returns</div>
+    
+    <div class="content-section">
+        <div class="feature-grid">
+            <div class="feature-box">
+                <div class="feature-title">Strategic Acquisition</div>
+                <div class="feature-description">
+                    <strong>Timeline:</strong> 5-7 years<br>
+                    <strong>Potential Acquirers:</strong> Google, Microsoft, Amazon, Palantir<br>
+                    <strong>Valuation:</strong> $500M - $2B
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">Government Acquisition</div>
+                <div class="feature-description">
+                    <strong>Timeline:</strong> 3-5 years<br>
+                    <strong>Potential Acquirers:</strong> Public Safety Canada, Indigenous Services Canada<br>
+                    <strong>Valuation:</strong> $200M - $800M
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">Insurance Industry</div>
+                <div class="feature-description">
+                    <strong>Timeline:</strong> 4-6 years<br>
+                    <strong>Potential Acquirers:</strong> Intact Financial, Aviva, Swiss Re<br>
+                    <strong>Valuation:</strong> $300M - $1B
+                </div>
+            </div>
+            
+            <div class="feature-box">
+                <div class="feature-title">IPO</div>
+                <div class="feature-description">
+                    <strong>Timeline:</strong> 7-10 years<br>
+                    <strong>Market:</strong> TSX or NASDAQ<br>
+                    <strong>Valuation:</strong> $1B - $5B
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="metrics-grid">
+        <div class="metric-box">
+            <div class="metric-number">15-25x</div>
+            <div class="metric-label">Expected ROI</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">5-7 years</div>
+            <div class="metric-label">Target Exit Timeline</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">$500M+</div>
+            <div class="metric-label">Target Valuation</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-number">Multiple</div>
+            <div class="metric-label">Exit Pathways</div>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 18px; font-weight: bold;">
+            Strong strategic value for technology companies, governments, and insurance providers
+        </div>
+    </div>
+</div>
+
+<!-- Slide 15: Social Impact -->
+<div class="slide">
+    <div class="slide-number">15/16</div>
+    <div class="slide-title">Social Impact</div>
+    <div class="slide-subtitle">Technology for Good with Measurable Outcomes</div>
+    
+    <div class="content-section">
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="metric-number">10,000+</div>
+                <div class="metric-label">Lives Potentially Saved Annually</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-number">634</div>
+                <div class="metric-label">Indigenous Communities Served</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-number">$1B+</div>
+                <div class="metric-label">Disaster Losses Prevented</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-number">100%</div>
+                <div class="metric-label">Cultural Respect Commitment</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="two-column">
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 24px;">Indigenous Reconciliation</h3>
+            <ul class="solution-list">
+                <li>Economic empowerment through technology partnerships</li>
+                <li>Traditional knowledge preservation and integration</li>
+                <li>Community ownership and control models</li>
+                <li>Indigenous language support and cultural protocols</li>
+                <li>Youth engagement and technology education</li>
+            </ul>
+        </div>
+        
+        <div class="column">
+            <h3 style="color: #2c5aa0; font-size: 24px;">Climate Adaptation</h3>
+            <ul class="solution-list">
+                <li>Disaster resilience for vulnerable communities</li>
+                <li>Climate change adaptation technology</li>
+                <li>Reduced emergency response costs</li>
+                <li>Environmental monitoring and protection</li>
+                <li>Sustainable technology development</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="highlight-box">
+        <div style="font-size: 20px; font-weight: bold;">
+            ESG-aligned investment with measurable social and environmental impact
+        </div>
+    </div>
+</div>
+
+<!-- Slide 16: Call to Action -->
+<div class="slide">
+    <div class="slide-number">16/16</div>
+    <div class="cta-section">
+        <div class="cta-title">Join Us in Saving Lives</div>
+        <div class="cta-text">
+            SafeRoute AI is ready to transform emergency response and save thousands of lives annually
+        </div>
+        
+        <div style="display: flex; justify-content: space-around; margin: 40px 0;">
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold;">$1M</div>
+                <div style="font-size: 16px;">Investment Sought</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold;">18 Months</div>
+                <div style="font-size: 16px;">To Profitability</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold;">15-25x</div>
+                <div style="font-size: 16px;">Expected ROI</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px;">
+            <div class="contact-info"><strong>Contact Information</strong></div>
+            <div class="contact-info">Email: investors@saferoute.ai</div>
+            <div class="contact-info">Phone: +1 (604) 555-0123</div>
+            <div class="contact-info">Website: www.saferoute.ai</div>
+        </div>
+        
+        <div style="margin-top: 30px; font-size: 18px; font-style: italic;">
+            "If you knew how to save a life, would you?"
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

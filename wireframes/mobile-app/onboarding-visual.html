@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute AI - Mobile App Wireframes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .wireframe-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .phone-frame {
+            width: 300px;
+            height: 600px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 30px;
+            background: #000;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 12px;
+        }
+        
+        .header {
+            background: #8B4513;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .emergency-btn {
+            width: 150px;
+            height: 150px;
+            background: #dc2626;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .feature-list {
+            list-style: none;
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:before {
+            content: "📡";
+            margin-right: 10px;
+        }
+        
+        .screen-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .territory-acknowledgment {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        .bottom-nav {
+            height: 60px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .nav-item.active {
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 30px; color: #333;">SafeRoute AI - Mobile App Wireframes</h1>
+    
+    <div class="wireframe-container">
+        <!-- Screen 1: Welcome & Territory Acknowledgment -->
+        <div class="phone-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>📶 📶 📶 🔋</span>
+                </div>
+                <div class="header">
+                    <h2>SafeRoute AI</h2>
+                    <p>Indigenous-First Emergency Response</p>
+                </div>
+                <div class="content">
+                    <div class="screen-title">Welcome Screen</div>
+                    <div class="territory-acknowledgment">
+                        <strong>Territory Acknowledgment</strong><br>
+                        We acknowledge that this app serves Indigenous communities on their traditional territories.
+                    </div>
+                    <p>Connecting communities through satellite technology and traditional knowledge.</p>
+                    <button class="btn">Get Started</button>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Emergency Features Introduction -->
+        <div class="phone-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>📶 📶 📶 🔋</span>
+                </div>
+                <div class="header">
+                    <h3>Emergency Features</h3>
+                </div>
+                <div class="content">
+                    <div class="screen-title">Feature Overview</div>
+                    <ul class="feature-list">
+                        <li>Satellite Emergency Communication</li>
+                        <li>Community Hero Network</li>
+                        <li>Real-time Weather Alerts</li>
+                        <li>Offline Emergency Protocols</li>
+                        <li>Cultural Safety Resources</li>
+                    </ul>
+                    <button class="btn">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Main Dashboard -->
+        <div class="phone-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>📡 📶 📶 🔋</span>
+                </div>
+                <div class="header">
+                    <h3>Dashboard</h3>
+                    <small>Connected via Starlink</small>
+                </div>
+                <div class="content">
+                    <div class="screen-title">Main Dashboard</div>
+                    <button class="emergency-btn">
+                        EMERGENCY<br>
+                        HELP
+                    </button>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div>Heroes Online</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">98%</div>
+                            <div>Network Status</div>
+                        </div>
+                    </div>
+                    <button class="btn">Community Updates</button>
+                    <button class="btn btn-secondary">Weather Alerts</button>
+                </div>
+                <div class="bottom-nav">
+                    <div class="nav-item active">🏠 Home</div>
+                    <div class="nav-item">🗺️ Map</div>
+                    <div class="nav-item">👥 Heroes</div>
+                    <div class="nav-item">⚙️ Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Emergency Activation -->
+        <div class="phone-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>🆘 📡 📶 🔋</span>
+                </div>
+                <div class="header" style="background: #dc2626;">
+                    <h3>EMERGENCY ACTIVE</h3>
+                    <small>Connecting to Heroes...</small>
+                </div>
+                <div class="content">
+                    <div class="screen-title">Emergency Response</div>
+                    <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #dc2626;">
+                        <p><strong>Emergency Broadcast Sent</strong></p>
+                        <p>Location: Shared via Starlink</p>
+                        <p>Heroes Notified: 8 nearby</p>
+                        <p>ETA: 12 minutes</p>
+                    </div>
+                    <button class="btn" style="background: #dc2626;">Cancel Emergency</button>
+                    <button class="btn btn-secondary">Send Update</button>
+                    <div style="margin-top: 20px; font-size: 14px; color: #6b7280;">
+                        <p>📡 Satellite connection active</p>
+                        <p>🚁 Emergency services contacted</p>
+                        <p>👥 Community heroes en route</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

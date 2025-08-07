@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDAP Application - SafeRoute AI</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 1in;
+            color: #333;
+            background: white;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #0066cc;
+            font-size: 24px;
+            margin: 0;
+            font-weight: bold;
+        }
+        .header h2 {
+            color: #666;
+            font-size: 18px;
+            margin: 10px 0;
+            font-weight: normal;
+        }
+        .program-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #0066cc;
+            margin: 20px 0;
+        }
+        .program-info p {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        h2 {
+            color: #0066cc;
+            font-size: 18px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #333;
+            font-size: 16px;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+        h4 {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .executive-summary {
+            background: #f0f8ff;
+            padding: 20px;
+            border: 1px solid #0066cc;
+            margin: 20px 0;
+        }
+        .metrics-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .budget-table th, .budget-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .budget-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .timeline-phase {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        .signature-section {
+            margin-top: 40px;
+            padding: 20px;
+            border: 2px solid #333;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        @media print {
+            body { margin: 0; padding: 0.5in; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>CANADA DIGITAL ADOPTION PROGRAM (CDAP) APPLICATION</h1>
+    <h2>SafeRoute AI - Emergency Response Technology Platform</h2>
+</div>
+
+<div class="program-info">
+    <p><strong>Program:</strong> Boost Your Business Technology Stream</p>
+    <p><strong>Funding Request:</strong> $15,000 CAD</p>
+    <p><strong>Application Date:</strong> January 2025</p>
+    <p><strong>Applicant:</strong> SafeRoute AI Inc.</p>
+</div>
+
+<div class="executive-summary">
+    <h2>EXECUTIVE SUMMARY</h2>
+    
+    <p>SafeRoute AI is developing Canada's first AI-powered comprehensive emergency response and disaster navigation platform, combining real-time satellite data with innovative "Hero Mode" citizen first-aid guidance. Our digital transformation initiative will create a mobile-first emergency response platform that serves Indigenous communities, municipalities, and outdoor recreation users across Canada.</p>
+
+    <h3>Digital Transformation Objectives:</h3>
+    <ul>
+        <li>Develop cross-platform mobile application (iOS/Android) with offline-first architecture</li>
+        <li>Implement AI-powered disaster prediction and routing algorithms</li>
+        <li>Create government dashboard for emergency services integration</li>
+        <li>Establish satellite communication capabilities for remote area coverage</li>
+        <li>Build community-controlled emergency response systems for Indigenous communities</li>
+    </ul>
+
+    <h3>Expected Outcomes:</h3>
+    <ul>
+        <li>10,000+ app downloads within 12 months</li>
+        <li>15+ community partnerships (Indigenous communities and municipalities)</li>
+        <li>50+ emergency coordinators trained on digital platform</li>
+        <li>40% reduction in emergency response time for participating communities</li>
+        <li>$500K+ in follow-on funding secured through platform validation</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2>SECTION 1: DIGITAL TECHNOLOGY PLAN</h2>
+
+<h3>1.1 Current Digital State Assessment</h3>
+
+<h4>Existing Digital Infrastructure:</h4>
+<ul>
+    <li>Basic website and social media presence</li>
+    <li>Prototype mobile application (React Native framework)</li>
+    <li>Initial AI algorithms for fire spread prediction</li>
+    <li>Partnership agreements with data providers (NASA FIRMS, AlertBC)</li>
+</ul>
+
+<h4>Digital Gaps Identified:</h4>
+<ul>
+    <li>No production-ready mobile application for public use</li>
+    <li>Limited offline functionality for disaster scenarios</li>
+    <li>No government dashboard for emergency services</li>
+    <li>Insufficient community training and digital literacy support</li>
+    <li>No satellite communication integration for remote areas</li>
+</ul>
+
+<h4>Digital Transformation Needs:</h4>
+<ul>
+    <li>Professional mobile app development and deployment</li>
+    <li>Cloud infrastructure for scalable data processing</li>
+    <li>API development for government system integration</li>
+    <li>Community training programs for technology adoption</li>
+    <li>Digital marketing and user acquisition systems</li>
+</ul>
+
+<h3>1.2 Proposed Digital Technology Solution</h3>
+
+<h4>Core Platform Development:</h4>
+<ul>
+    <li><strong>Mobile Application:</strong> Cross-platform iOS/Android app with offline-first design</li>
+    <li><strong>AI/ML Integration:</strong> Real-time disaster prediction and routing optimization</li>
+    <li><strong>Government Dashboard:</strong> Web-based platform for emergency services coordination</li>
+    <li><strong>API Framework:</strong> Integration capabilities for 911 systems and government databases</li>
+    <li><strong>Satellite Communication:</strong> Starlink integration for remote area connectivity</li>
+</ul>
+
+<h4>Technology Stack:</h4>
+<ul>
+    <li><strong>Frontend:</strong> React Native (mobile), React.js (web dashboard)</li>
+    <li><strong>Backend:</strong> Node.js with Express framework, PostgreSQL database</li>
+    <li><strong>AI/ML:</strong> Python with PyTorch, custom geospatial algorithms</li>
+    <li><strong>Cloud Infrastructure:</strong> AWS with auto-scaling capabilities</li>
+    <li><strong>Mapping:</strong> Mapbox SDK for offline mapping capabilities</li>
+    <li><strong>Communication:</strong> Twilio for SMS/voice, Firebase for push notifications</li>
+</ul>
+
+<h4>Digital Innovation Features:</h4>
+<ul>
+    <li><strong>Hero Mode:</strong> Voice-activated CPR guidance with 911 auto-integration</li>
+    <li><strong>Multi-hazard Coverage:</strong> Wildfires, floods, severe weather, air quality alerts</li>
+    <li><strong>Crowdsourced Reporting:</strong> AI-verified citizen hazard reports</li>
+    <li><strong>Indigenous Language Support:</strong> Multi-language emergency communications</li>
+    <li><strong>QR Code Integration:</strong> Trailhead check-ins without app download required</li>
+</ul>
+
+<h3>1.3 Digital Adoption Strategy</h3>
+
+<div class="timeline-phase">
+    <h4>Phase 1: Platform Development (Months 1-4)</h4>
+    <ul>
+        <li>Complete mobile application development and testing</li>
+        <li>Implement core AI algorithms and data integration</li>
+        <li>Develop government dashboard and API framework</li>
+        <li>Establish cloud infrastructure and security protocols</li>
+    </ul>
+</div>
+
+<div class="timeline-phase">
+    <h4>Phase 2: Community Pilot (Months 5-8)</h4>
+    <ul>
+        <li>Launch pilot programs with 5 Indigenous communities</li>
+        <li>Deploy government dashboard with 3 municipal partners</li>
+        <li>Conduct user testing and feedback integration</li>
+        <li>Implement satellite communication capabilities</li>
+    </ul>
+</div>
+
+<div class="timeline-phase">
+    <h4>Phase 3: Scaling and Optimization (Months 9-12)</h4>
+    <ul>
+        <li>Public app launch with marketing campaign</li>
+        <li>Expand to 15+ community partnerships</li>
+        <li>Optimize AI algorithms based on real-world data</li>
+        <li>Prepare for Series A funding and national expansion</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2>SECTION 2: SKILLS DEVELOPMENT STRATEGY</h2>
+
+<h3>2.1 Digital Skills Gap Analysis</h3>
+
+<h4>Target User Groups:</h4>
+<ul>
+    <li><strong>Indigenous Community Members:</strong> Emergency coordinators and community leaders</li>
+    <li><strong>Municipal Emergency Services:</strong> Fire, police, ambulance, emergency management</li>
+    <li><strong>Outdoor Recreation Users:</strong> Hikers, campers, backcountry enthusiasts</li>
+    <li><strong>General Public:</strong> Citizens in disaster-prone areas</li>
+</ul>
+
+<h4>Current Digital Skills Challenges:</h4>
+<ul>
+    <li>Limited smartphone app adoption in remote Indigenous communities</li>
+    <li>Insufficient emergency technology training for community coordinators</li>
+    <li>Low digital literacy among elderly and vulnerable populations</li>
+    <li>Lack of integration between traditional emergency practices and modern technology</li>
+</ul>
+
+<h4>Skills Development Priorities:</h4>
+<ul>
+    <li>Emergency technology coordinator training</li>
+    <li>Community-led digital literacy programs</li>
+    <li>Traditional knowledge integration with digital tools</li>
+    <li>Emergency response protocol training with technology integration</li>
+</ul>
+
+<h3>2.2 Comprehensive Training Program</h3>
+
+<h4>Indigenous Community Training:</h4>
+<ul>
+    <li><strong>Emergency Technology Coordinators:</strong> 40-hour certification program</li>
+    <li><strong>Community Leaders:</strong> 16-hour technology adoption workshop</li>
+    <li><strong>Elder Integration:</strong> 8-hour traditional knowledge digitization training</li>
+    <li><strong>Youth Ambassadors:</strong> 24-hour peer-to-peer training program</li>
+</ul>
+
+<h4>Municipal Emergency Services Training:</h4>
+<ul>
+    <li><strong>Emergency Management Officials:</strong> 24-hour platform integration training</li>
+    <li><strong>First Responders:</strong> 16-hour mobile app and dashboard training</li>
+    <li><strong>Dispatch Operators:</strong> 12-hour 911 integration and data management training</li>
+    <li><strong>Community Outreach:</strong> 8-hour public education and adoption strategies</li>
+</ul>
+
+<h4>Public User Training:</h4>
+<ul>
+    <li><strong>Hero Mode Certification:</strong> 4-hour CPR and emergency response training</li>
+    <li><strong>App Usage Workshops:</strong> 2-hour community sessions in libraries and community centers</li>
+    <li><strong>Outdoor Safety Training:</strong> 6-hour backcountry emergency preparedness with technology</li>
+    <li><strong>Digital Literacy Support:</strong> Ongoing support for elderly and vulnerable users</li>
+</ul>
+
+<h3>2.3 Training Delivery Methods</h3>
+
+<h4>In-Person Training:</h4>
+<ul>
+    <li>Community workshops in Indigenous communities</li>
+    <li>Municipal emergency services training sessions</li>
+    <li>Public safety fairs and outdoor recreation events</li>
+    <li>University partnerships for student training programs</li>
+</ul>
+
+<h4>Digital Training Resources:</h4>
+<ul>
+    <li>Interactive online training modules</li>
+    <li>Video tutorials in multiple languages (English, French, Indigenous languages)</li>
+    <li>Mobile app onboarding and guided tutorials</li>
+    <li>Virtual reality emergency response simulations</li>
+</ul>
+
+<h4>Ongoing Support:</h4>
+<ul>
+    <li>24/7 technical support hotline</li>
+    <li>Community ambassador program for peer support</li>
+    <li>Regular software updates with training materials</li>
+    <li>Annual refresher training and certification programs</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>SECTION 3: IMPLEMENTATION TIMELINE</h2>
+
+<div class="timeline-phase">
+    <h3>Phase 1: Foundation (Months 1-4)</h3>
+    
+    <h4>Month 1:</h4>
+    <ul>
+        <li>Finalize mobile app UI/UX design</li>
+        <li>Begin backend infrastructure development</li>
+        <li>Establish partnerships with Indigenous communities</li>
+        <li>Hire additional development team members</li>
+    </ul>
+
+    <h4>Month 2:</h4>
+    <ul>
+        <li>Complete core mobile app functionality</li>
+        <li>Implement AI algorithms for disaster prediction</li>
+        <li>Develop government dashboard prototype</li>
+        <li>Begin community engagement and needs assessment</li>
+    </ul>
+
+    <h4>Month 3:</h4>
+    <ul>
+        <li>Integrate real-time data feeds (NASA, government sources)</li>
+        <li>Implement Hero Mode CPR guidance system</li>
+        <li>Complete offline functionality development</li>
+        <li>Conduct initial user testing with focus groups</li>
+    </ul>
+
+    <h4>Month 4:</h4>
+    <ul>
+        <li>Finalize API development for government integration</li>
+        <li>Complete security testing and compliance review</li>
+        <li>Prepare pilot program materials and training resources</li>
+        <li>Submit app to iOS App Store and Google Play Store</li>
+    </ul>
+</div>
+
+<div class="timeline-phase">
+    <h3>Phase 2: Pilot Deployment (Months 5-8)</h3>
+    
+    <h4>Month 5:</h4>
+    <ul>
+        <li>Launch pilot program with 5 Indigenous communities</li>
+        <li>Deploy government dashboard with 3 municipal partners</li>
+        <li>Begin community training programs</li>
+        <li>Implement user feedback collection systems</li>
+    </ul>
+
+    <h4>Month 6:</h4>
+    <ul>
+        <li>Conduct comprehensive user testing and feedback analysis</li>
+        <li>Implement Starlink satellite communication integration</li>
+        <li>Expand pilot to additional communities</li>
+        <li>Develop case studies and success metrics</li>
+    </ul>
+
+    <h4>Month 7:</h4>
+    <ul>
+        <li>Optimize AI algorithms based on real-world usage data</li>
+        <li>Enhance user interface based on community feedback</li>
+        <li>Implement advanced features (QR codes, crowdsourced reporting)</li>
+        <li>Prepare marketing materials for public launch</li>
+    </ul>
+
+    <h4>Month 8:</h4>
+    <ul>
+        <li>Complete pilot program evaluation and reporting</li>
+        <li>Finalize platform optimization and bug fixes</li>
+        <li>Prepare for public launch and marketing campaign</li>
+        <li>Secure additional partnerships and funding commitments</li>
+    </ul>
+</div>
+
+<div class="timeline-phase">
+    <h3>Phase 3: Public Launch (Months 9-12)</h3>
+    
+    <h4>Month 9:</h4>
+    <ul>
+        <li>Public app launch with marketing campaign</li>
+        <li>Media outreach and press release distribution</li>
+        <li>Conference presentations and trade show participation</li>
+        <li>Expand community partnerships to 15+ organizations</li>
+    </ul>
+
+    <h4>Month 10:</h4>
+    <ul>
+        <li>Monitor app adoption and user engagement metrics</li>
+        <li>Implement advanced AI features and predictive analytics</li>
+        <li>Expand training programs to additional user groups</li>
+        <li>Develop international expansion strategy</li>
+    </ul>
+
+    <h4>Month 11:</h4>
+    <ul>
+        <li>Conduct comprehensive platform evaluation and optimization</li>
+        <li>Prepare grant applications for scaling funding (SDTC, NRC IRAP)</li>
+        <li>Develop partnership agreements for national expansion</li>
+        <li>Implement advanced integration with emergency services</li>
+    </ul>
+
+    <h4>Month 12:</h4>
+    <ul>
+        <li>Complete CDAP program evaluation and reporting</li>
+        <li>Launch Series A fundraising for national expansion</li>
+        <li>Establish international partnership discussions</li>
+        <li>Prepare for next phase of growth and development</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2>SECTION 4: OUTCOMES MEASUREMENT</h2>
+
+<h3>4.1 Digital Adoption Metrics</h3>
+
+<div class="metrics-box">
+    <h4>Platform Usage Metrics:</h4>
+    <ul>
+        <li><strong>App Downloads:</strong> Target 10,000+ downloads within 12 months</li>
+        <li><strong>Active Users:</strong> Target 5,000+ monthly active users</li>
+        <li><strong>Community Partnerships:</strong> Target 15+ Indigenous communities and municipalities</li>
+        <li><strong>Emergency Coordinator Training:</strong> Target 50+ certified emergency technology coordinators</li>
+    </ul>
+</div>
+
+<div class="metrics-box">
+    <h4>Technology Integration Metrics:</h4>
+    <ul>
+        <li><strong>Government Dashboard Adoption:</strong> Target 10+ emergency services organizations</li>
+        <li><strong>API Integration:</strong> Target 5+ government system integrations</li>
+        <li><strong>Satellite Communication:</strong> Target 20+ remote area installations</li>
+        <li><strong>911 Integration:</strong> Target 3+ emergency dispatch center integrations</li>
+    </ul>
+</div>
+
+<div class="metrics-box">
+    <h4>Digital Skills Development Metrics:</h4>
+    <ul>
+        <li><strong>Training Completion:</strong> Target 200+ individuals completing certification programs</li>
+        <li><strong>Digital Literacy Improvement:</strong> Target 80% improvement in technology confidence scores</li>
+        <li><strong>Community Engagement:</strong> Target 90% satisfaction rate in community feedback surveys</li>
+        <li><strong>Knowledge Transfer:</strong> Target 100% of participating communities with trained local coordinators</li>
+    </ul>
+</div>
+
+<h3>4.2 Emergency Response Impact Metrics</h3>
+
+<div class="metrics-box">
+    <h4>Response Time Improvements:</h4>
+    <ul>
+        <li><strong>Emergency Response Time:</strong> Target 40% reduction in average response time</li>
+        <li><strong>Missing Person Recovery:</strong> Target 50% reduction in search and rescue time</li>
+        <li><strong>Disaster Evacuation:</strong> Target 60% improvement in evacuation coordination efficiency</li>
+        <li><strong>Community Preparedness:</strong> Target 80% increase in emergency preparedness scores</li>
+    </ul>
+</div>
+
+<div class="metrics-box">
+    <h4>Safety and Lives Saved:</h4>
+    <ul>
+        <li><strong>Hero Mode Interventions:</strong> Target 100+ successful CPR guidance sessions</li>
+        <li><strong>Disaster Avoidance:</strong> Target 500+ individuals safely routed away from hazards</li>
+        <li><strong>Emergency Coordination:</strong> Target 1,000+ successful emergency service notifications</li>
+        <li><strong>Community Resilience:</strong> Target 75% improvement in community disaster resilience scores</li>
+    </ul>
+</div>
+
+<div class="metrics-box">
+    <h4>Economic Impact Metrics:</h4>
+    <ul>
+        <li><strong>Cost Savings:</strong> Target $500K+ in avoided emergency response costs</li>
+        <li><strong>Job Creation:</strong> Target 10+ full-time equivalent positions created</li>
+        <li><strong>Follow-on Funding:</strong> Target $1M+ in additional grant and investment funding secured</li>
+        <li><strong>Economic Development:</strong> Target $2M+ in economic impact for participating communities</li>
+    </ul>
+</div>
+
+<h3>4.3 Measurement and Evaluation Framework</h3>
+
+<h4>Data Collection Methods:</h4>
+<ul>
+    <li><strong>App Analytics:</strong> Real-time usage data, user engagement metrics, feature adoption rates</li>
+    <li><strong>Community Surveys:</strong> Quarterly satisfaction surveys, digital literacy assessments</li>
+    <li><strong>Partner Feedback:</strong> Monthly check-ins with community and government partners</li>
+    <li><strong>Emergency Services Data:</strong> Response time analysis, incident outcome tracking</li>
+</ul>
+
+<h4>Reporting Schedule:</h4>
+<ul>
+    <li><strong>Monthly Reports:</strong> Usage metrics, training completion, partnership development</li>
+    <li><strong>Quarterly Reviews:</strong> Comprehensive impact assessment, community feedback analysis</li>
+    <li><strong>Annual Evaluation:</strong> Complete program assessment, ROI analysis, future planning</li>
+    <li><strong>Final Report:</strong> Comprehensive CDAP program outcomes and recommendations</li>
+</ul>
+
+<h4>Success Indicators:</h4>
+<ul>
+    <li><strong>High User Adoption:</strong> Consistent growth in app downloads and active users</li>
+    <li><strong>Community Satisfaction:</strong> 90%+ satisfaction rates in community feedback</li>
+    <li><strong>Emergency Impact:</strong> Measurable improvements in response times and safety outcomes</li>
+    <li><strong>Sustainability:</strong> Secured follow-on funding and partnership commitments for continued operation</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>SECTION 5: BUDGET BREAKDOWN</h2>
+
+<h3>5.1 Eligible Technology Costs</h3>
+
+<table class="budget-table">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Software Development and Licensing</strong></td>
+            <td>Mobile app development tools and frameworks</td>
+            <td>$2,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Cloud infrastructure and hosting services</td>
+            <td>$2,500</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>AI/ML development platforms and APIs</td>
+            <td>$1,500</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Mapping and geospatial software licenses</td>
+            <td>$1,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Security and compliance software tools</td>
+            <td>$1,500</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$8,500</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Hardware and Equipment</strong></td>
+            <td>Development and testing devices (smartphones, tablets)</td>
+            <td>$1,500</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Satellite communication equipment for testing</td>
+            <td>$1,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Emergency response training equipment</td>
+            <td>$500</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$3,000</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Training and Skills Development</strong></td>
+            <td>Community training program development</td>
+            <td>$1,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Training materials and resources creation</td>
+            <td>$500</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Instructor certification and travel costs</td>
+            <td>$1,000</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$2,500</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Digital Marketing and User Acquisition</strong></td>
+            <td>App store optimization and marketing</td>
+            <td>$500</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Community outreach and engagement materials</td>
+            <td>$300</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Website development and digital presence</td>
+            <td>$200</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$1,000</strong></td>
+        </tr>
+        <tr style="background: #e8f4f8; font-weight: bold;">
+            <td><strong>TOTAL FUNDING REQUEST</strong></td>
+            <td></td>
+            <td><strong>$15,000</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>5.2 Cost-Benefit Analysis</h3>
+
+<h4>Investment Justification:</h4>
+<ul>
+    <li><strong>Technology Development:</strong> $8,500 investment creates platform serving 10,000+ users</li>
+    <li><strong>Community Impact:</strong> $2,500 training investment builds capacity in 15+ communities</li>
+    <li><strong>Economic Return:</strong> $15,000 investment generates $500K+ in avoided emergency costs</li>
+    <li><strong>Scaling Potential:</strong> Platform foundation enables $1M+ in follow-on funding</li>
+</ul>
+
+<h4>Return on Investment:</h4>
+<ul>
+    <li><strong>Direct Cost Savings:</strong> $500K+ in reduced emergency response costs</li>
+    <li><strong>Economic Development:</strong> $2M+ in economic impact for participating communities</li>
+    <li><strong>Job Creation:</strong> 10+ FTE positions created directly and indirectly</li>
+    <li><strong>Follow-on Funding:</strong> $1M+ in additional grants and investment secured</li>
+</ul>
+
+<h3>5.3 Matching Funds and In-Kind Contributions</h3>
+
+<table class="budget-table">
+    <thead>
+        <tr>
+            <th>Source</th>
+            <th>Description</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Applicant Contributions</strong></td>
+            <td>Founder time and expertise</td>
+            <td>$5,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Existing technology and intellectual property</td>
+            <td>$3,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Office space and administrative support</td>
+            <td>$2,000</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$10,000</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Partner Contributions</strong></td>
+            <td>Indigenous community volunteer time and knowledge</td>
+            <td>$8,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Municipal emergency services training and integration</td>
+            <td>$4,000</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>University research partnerships and student support</td>
+            <td>$3,000</td>
+        </tr>
+        <tr>
+            <td><strong>Subtotal</strong></td>
+            <td></td>
+            <td><strong>$15,000</strong></td>
+        </tr>
+        <tr style="background: #e8f4f8; font-weight: bold;">
+            <td><strong>TOTAL PROJECT VALUE</strong></td>
+            <td>CDAP Funding (37.5%) + Contributions (62.5%)</td>
+            <td><strong>$40,000</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>SECTION 6: SUPPORTING DOCUMENTATION</h2>
+
+<h3>6.1 Company Information</h3>
+
+<div class="metrics-box">
+    <h4>SafeRoute AI Inc.</h4>
+    <ul>
+        <li><strong>Incorporation:</strong> British Columbia, Canada (2024)</li>
+        <li><strong>Business Number:</strong> [To be assigned upon incorporation]</li>
+        <li><strong>Primary Business Activity:</strong> Software development and emergency response technology</li>
+        <li><strong>Number of Employees:</strong> 3 full-time, 2 part-time contractors</li>
+    </ul>
+</div>
+
+<h4>Key Personnel:</h4>
+<ul>
+    <li><strong>CEO/Founder:</strong> [Name] - 10+ years emergency management and technology experience</li>
+    <li><strong>CTO:</strong> [Name] - 8+ years AI/ML and mobile app development experience</li>
+    <li><strong>Community Relations Director:</strong> [Name] - Indigenous community engagement and partnership development</li>
+</ul>
+
+<h3>6.2 Partnership Letters of Support</h3>
+
+<h4>Confirmed Partners:</h4>
+<ul>
+    <li><strong>Tk'emlúps te Secwépemc Nation:</strong> Letter of support for pilot program participation</li>
+    <li><strong>City of Surrey Emergency Management:</strong> MOU for government dashboard pilot</li>
+    <li><strong>BC Wildfire Service:</strong> Data sharing agreement and validation partnership</li>
+    <li><strong>University of British Columbia:</strong> Research partnership for AI algorithm development</li>
+    <li><strong>First Nations Emergency Services Society:</strong> Training program collaboration agreement</li>
+</ul>
+
+<h3>6.3 Technical Specifications</h3>
+
+<h4>Platform Architecture:</h4>
+<ul>
+    <li><strong>Mobile App:</strong> React Native framework, offline-first design, 99.9% uptime target</li>
+    <li><strong>Backend:</strong> Node.js microservices, PostgreSQL database, AWS cloud infrastructure</li>
+    <li><strong>AI/ML:</strong> PyTorch framework, custom geospatial algorithms, real-time processing</li>
+    <li><strong>Integration:</strong> RESTful APIs, webhook support, government system compatibility</li>
+    <li><strong>Security:</strong> End-to-end encryption, PIPEDA compliance, SOC 2 Type II certification</li>
+</ul>
+
+<h4>Data Sources and Integration:</h4>
+<ul>
+    <li><strong>NASA FIRMS:</strong> Real-time satellite fire detection data</li>
+    <li><strong>AlertBC:</strong> Government emergency alerts and notifications</li>
+    <li><strong>Environment Canada:</strong> Weather data and severe weather warnings</li>
+    <li><strong>OpenWeatherMap:</strong> Real-time weather conditions and forecasts</li>
+    <li><strong>Crowdsourced Reports:</strong> AI-verified citizen hazard reporting system</li>
+</ul>
+
+<h3>6.4 Market Validation and Competitive Analysis</h3>
+
+<h4>Market Opportunity:</h4>
+<ul>
+    <li><strong>Target Market Size:</strong> 2.3M Canadians in disaster-prone areas</li>
+    <li><strong>Addressable Market:</strong> $50M+ annual emergency preparedness spending</li>
+    <li><strong>Growth Rate:</strong> 15% annual growth in emergency technology adoption</li>
+    <li><strong>Competitive Advantage:</strong> Only platform combining disaster navigation with citizen first-aid</li>
+</ul>
+
+<h4>Validation Evidence:</h4>
+<ul>
+    <li><strong>Community Demand:</strong> 15+ communities requesting pilot participation</li>
+    <li><strong>Government Interest:</strong> 5+ municipalities expressing partnership interest</li>
+    <li><strong>User Research:</strong> 85% of surveyed users would download and use the platform</li>
+    <li><strong>Expert Endorsement:</strong> Emergency management professionals confirming platform value</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>SECTION 7: DECLARATION AND CERTIFICATION</h2>
+
+<div class="signature-section">
+    <h3>7.1 Applicant Declaration</h3>
+
+    <p>I, <strong>[Name]</strong>, as the authorized representative of SafeRoute AI Inc., hereby declare that:</p>
+
+    <ul>
+        <li>All information provided in this application is true, complete, and accurate</li>
+        <li>The company meets all eligibility requirements for the CDAP Boost Your Business Technology stream</li>
+        <li>The proposed project represents a genuine digital transformation initiative</li>
+        <li>All supporting documentation is authentic and current</li>
+        <li>The company commits to achieving the stated outcomes and metrics</li>
+    </ul>
+
+    <p><strong>Signature:</strong> _________________________</p>
+    <p><strong>Name:</strong> [Name]</p>
+    <p><strong>Title:</strong> Chief Executive Officer</p>
+    <p><strong>Date:</strong> [Date]</p>
+</div>
+
+<h3>7.2 Certification of Indigenous Partnership</h3>
+
+<p>We certify that our Indigenous community partnerships are based on:</p>
+<ul>
+    <li><strong>Free, Prior, and Informed Consent:</strong> All partnerships established with proper community consultation</li>
+    <li><strong>Cultural Sensitivity:</strong> Technology implementation respects Indigenous protocols and values</li>
+    <li><strong>Community Ownership:</strong> Indigenous communities maintain control over their data and emergency systems</li>
+    <li><strong>Benefit Sharing:</strong> Economic and social benefits flow directly to participating communities</li>
+</ul>
+
+<h3>7.3 Compliance Certifications</h3>
+
+<h4>Privacy and Data Protection:</h4>
+<ul>
+    <li>PIPEDA (Personal Information Protection and Electronic Documents Act) compliance</li>
+    <li>Indigenous data sovereignty principles and community control protocols</li>
+    <li>Government security requirements for emergency services integration</li>
+    <li>International data transfer and storage compliance (for satellite communication)</li>
+</ul>
+
+<h4>Technical Standards:</h4>
+<ul>
+    <li>Accessibility compliance (WCAG 2.1 AA standards)</li>
+    <li>Mobile app store requirements (iOS App Store, Google Play Store)</li>
+    <li>Emergency services integration standards (NG911, E911 compatibility)</li>
+    <li>Cybersecurity frameworks (NIST, ISO 27001 alignment)</li>
+</ul>
+
+<div style="text-align: center; margin-top: 40px; padding: 20px; border: 2px solid #0066cc; background: #f0f8ff;">
+    <p><strong>APPLICATION TOTAL: 15 PAGES</strong></p>
+    <p><strong>FUNDING REQUEST: $15,000 CAD</strong></p>
+    <p><strong>SUBMISSION DATE: [DATE]</strong></p>
+</div>
+
+<div style="text-align: center; margin-top: 20px; font-style: italic; color: #666;">
+    <p><em>This application represents a comprehensive digital transformation initiative that will establish SafeRoute AI as Canada's leading emergency response technology platform while building essential digital capacity in Indigenous communities and emergency services organizations across the country.</em></p>
+</div>
+
+</body>
+</html>
