@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { initOfflineQueue } from "@/lib/offline-queue"
 
 export function OfflineBanner() {
   const [online, setOnline] = useState<boolean>(true)
@@ -8,6 +9,7 @@ export function OfflineBanner() {
   useEffect(() => {
     const update = () => setOnline(navigator.onLine)
     update()
+    initOfflineQueue()
     window.addEventListener("online", update)
     window.addEventListener("offline", update)
     return () => {

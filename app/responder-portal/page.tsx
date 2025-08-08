@@ -1,7 +1,7 @@
 import ResponderDashboard from "@/components/responder/responder-dashboard"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Activity, ShieldAlert, BookText } from 'lucide-react'
+import { ArrowLeft, Activity, ShieldAlert, BookText, Plus } from 'lucide-react'
 import AlertFeed from "@/components/bodyguard/alert-feed"
 import { LegalBanner } from "@/components/common/legal-banner"
 import { EvidenceBadge } from "@/components/common/evidence-badge"
@@ -42,6 +42,12 @@ export default function ResponderPortalPage() {
               <Button variant="outline" className="border-2">
                 <BookText className="h-4 w-4 mr-2" />
                 Master Context
+              </Button>
+            </Link>
+            <Link href="/responder-live">
+              <Button className="border-2">
+                <Plus className="h-4 w-4 mr-2" />
+                Start Responder Live
               </Button>
             </Link>
           </div>

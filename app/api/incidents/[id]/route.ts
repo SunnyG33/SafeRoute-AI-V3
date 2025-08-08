@@ -1,28 +1,23 @@
-import { NextRequest, NextResponse } from "next/server"
-import type { Incident } from "@/components/hero/incident-types"
-import { getStore } from "./store"
+import { NextResponse } from "next/server"
+import { getIncident, setStatus, updateIncident } from "@/lib/incident-store"
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const { INCIDENTS } = getStore()
-  const inc = INCIDENTS.find((i) => i.id === params.id)
-  if (!inc) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 })
-  return NextResponse.json({ ok: true, incident: inc })
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  const inc = getIncident(params.id)
+  if (!inc) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  return NextResponse.json({ incident: inc })
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { INCIDENTS } = getStore()
-  try {
-    const idx = INCIDENTS.findIndex((i) => i.id === params.id)
-    if (idx === -1) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 })
-    const body = await req.json()
-    const updated: Incident = {
-      ...INCIDENTS[idx],
-      status: body?.status ?? INCIDENTS[idx].status,
-      updatedAt: Date.now(),
-    }
-    INCIDENTS[idx] = updated
-    return NextResponse.json({ ok: true, incident: updated })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "Invalid payload" }, { status: 400 })
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+  const inc = getIncident(params.id)
+  if (!inc) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  const body = await req.json().catch(() => ({}))
+  if (body?.status) {
+    const updated = setStatus(params.id, body.status)
+    return NextResponse.json({ incident: updated })
   }
+  const updated = updateIncident(params.id, {
+    participants: Array.isArray(body?.participants) ? body.participants : undefined,
+    meta: typeof body?.meta === "object" ? body.meta : undefined,
+  })
+  return NextResponse.json({ incident: updated })
 }

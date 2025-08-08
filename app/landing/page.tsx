@@ -5,48 +5,64 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Shield, Users, Building2, Stethoscope, MapPin, Satellite, Radio, Zap, Globe, UserCheck, Activity } from 'lucide-react'
+import { Heart, Shield, Users, Building2, Stethoscope, MapPin, Satellite, Radio, Zap, Globe, UserCheck, Activity, LifeBuoy } from 'lucide-react'
 
 export default function LandingPage() {
-  const [userType, setUserType] = useState<'civilian' | 'responder' | null>(null)
+  const [userType, setUserType] = useState<"civilian" | "responder" | null>(null)
 
   if (userType === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-slate-50 flex items-center justify-center p-4">
+        {/* Top-left demo buttons */}
+        <div className="fixed top-4 left-4 z-50 flex flex-col gap-2">
+          <Link href="/hero-live" aria-label="Open Civilian HERO Live Demo">
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white border-4 border-slate-800 shadow-lg">
+              <LifeBuoy className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Civilian Live Demo</span>
+              <span className="sm:hidden">Civ Demo</span>
+            </Button>
+          </Link>
+          <Link href="/responder-live" aria-label="Open Responder Live Demo">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white border-4 border-slate-800 shadow-lg">
+              <Shield className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Responder Live Demo</span>
+              <span className="sm:hidden">Resp Demo</span>
+            </Button>
+          </Link>
+        </div>
+
         <Card className="w-full max-w-2xl border-4 border-slate-800 shadow-2xl">
           <CardHeader className="text-center pb-8">
             <div className="mx-auto mb-6 w-24 h-24 bg-gradient-to-br from-emerald-600 to-blue-600 rounded-full flex items-center justify-center">
               <Shield className="h-12 w-12 text-white" />
             </div>
-            <CardTitle className="text-4xl font-bold text-slate-800 mb-4">
-              🛡️ SafeRoute AI
-            </CardTitle>
+            <CardTitle className="text-4xl font-bold text-slate-800 mb-4">🛡️ SafeRoute AI</CardTitle>
             <CardDescription className="text-lg text-slate-600 max-w-lg mx-auto">
-              Indigenous-First Emergency Response Platform powered by Starlink satellite technology, 
-              connecting remote communities with life-saving emergency services.
+              Indigenous-First Emergency Response Platform powered by Starlink satellite technology, connecting remote
+              communities with life-saving emergency services.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center mb-8">
               <h3 className="text-xl font-semibold text-slate-700 mb-4">Choose Your Portal</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Button
-                onClick={() => setUserType('civilian')}
+                onClick={() => setUserType("civilian")}
                 className="h-32 bg-emerald-600 hover:bg-emerald-700 text-white border-4 border-slate-800 flex flex-col items-center justify-center space-y-3 text-lg font-bold"
               >
                 <UserCheck className="h-8 w-8" />
-                <span>I'm a Civilian</span>
+                <span>{"I'm a Civilian"}</span>
                 <span className="text-sm font-normal opacity-90">Safety Check-In • Emergency Help</span>
               </Button>
-              
+
               <Button
-                onClick={() => setUserType('responder')}
+                onClick={() => setUserType("responder")}
                 className="h-32 bg-blue-600 hover:bg-blue-700 text-white border-4 border-slate-800 flex flex-col items-center justify-center space-y-3 text-lg font-bold"
               >
                 <Shield className="h-8 w-8" />
-                <span>I'm a Responder</span>
+                <span>{"I'm a Responder"}</span>
                 <span className="text-sm font-normal opacity-90">EMS • Fire • Hospital • SAR</span>
               </Button>
             </div>
@@ -73,6 +89,24 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-slate-50">
+      {/* Top-left demo buttons */}
+      <div className="fixed top-4 left-4 z-50 flex flex-col gap-2">
+        <Link href="/hero-live" aria-label="Open Civilian HERO Live Demo">
+          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white border-4 border-slate-800 shadow-lg">
+            <LifeBuoy className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Civilian Live Demo</span>
+            <span className="sm:hidden">Civ Demo</span>
+          </Button>
+        </Link>
+        <Link href="/responder-live" aria-label="Open Responder Live Demo">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white border-4 border-slate-800 shadow-lg">
+            <Shield className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Responder Live Demo</span>
+            <span className="sm:hidden">Resp Demo</span>
+          </Button>
+        </Link>
+      </div>
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b-4 border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -83,14 +117,16 @@ export default function LandingPage() {
             <h1 className="text-2xl font-bold text-slate-800">SafeRoute AI</h1>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className={`border-2 ${userType === 'civilian' ? 'bg-emerald-100 text-emerald-800 border-emerald-600' : 'bg-blue-100 text-blue-800 border-blue-600'}`}>
-              {userType === 'civilian' ? 'Civilian Portal' : 'Responder Portal'}
-            </Badge>
-            <Button 
-              variant="outline" 
-              onClick={() => setUserType(null)}
-              className="border-2 border-slate-800"
+            <Badge
+              className={`border-2 ${
+                userType === "civilian"
+                  ? "bg-emerald-100 text-emerald-800 border-emerald-600"
+                  : "bg-blue-100 text-blue-800 border-blue-600"
+              }`}
             >
+              {userType === "civilian" ? "Civilian Portal" : "Responder Portal"}
+            </Badge>
+            <Button variant="outline" onClick={() => setUserType(null)} className="border-2 border-slate-800">
               Switch Portal
             </Button>
           </div>
@@ -101,19 +137,18 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-800 mb-4">
-            {userType === 'civilian' ? 'Civilian Emergency Portal' : 'Emergency Response Command'}
+            {userType === "civilian" ? "Civilian Emergency Portal" : "Emergency Response Command"}
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            {userType === 'civilian' 
-              ? 'Indigenous-First emergency response with consent-based sharing, offline capabilities, and cultural protocols.'
-              : 'Real-time incident management with LOGIQ recommendations, SafeShare records, and RAPTRnav routing.'
-            }
+            {userType === "civilian"
+              ? "Indigenous-First emergency response with consent-based sharing, offline capabilities, and cultural protocols."
+              : "Real-time incident management with LOGIQ recommendations, SafeShare records, and RAPTRnav routing."}
           </p>
         </div>
 
         {/* Main Portal Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {userType === 'civilian' ? (
+          {userType === "civilian" ? (
             <>
               <Link href="/civilian-portal">
                 <Card className="h-48 border-4 border-emerald-600 hover:border-emerald-800 transition-colors cursor-pointer group">
@@ -253,12 +288,12 @@ export default function LandingPage() {
             <Card className="border-4 border-slate-800 bg-white/90 backdrop-blur">
               <CardHeader>
                 <CardTitle className="text-center text-2xl">
-                  {userType === 'civilian' ? 'Civilian Features' : 'Responder Features'}
+                  {userType === "civilian" ? "Civilian Features" : "Responder Features"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {userType === 'civilian' ? (
+                  {userType === "civilian" ? (
                     <>
                       <div className="space-y-3">
                         <h4 className="font-bold text-lg flex items-center gap-2">
@@ -266,7 +301,7 @@ export default function LandingPage() {
                           SkyBridge Network
                         </h4>
                         <ul className="text-slate-600 space-y-1 text-sm">
-                          <li>• Automatic LTE → Mesh → Satellite fallback</li>
+                          <li>{"• Automatic LTE → Mesh → Satellite fallback"}</li>
                           <li>• LAB beacon for offline emergencies</li>
                           <li>• Cultural territory recognition (TLRT)</li>
                           <li>• Consent-based location sharing</li>
@@ -326,20 +361,6 @@ export default function LandingPage() {
           <div className="flex justify-center items-center gap-2 mb-4">
             <Shield className="h-6 w-6" />
             <span className="text-xl font-bold">SafeRoute AI</span>
-          </div>
-          <p className="text-slate-300 mb-4">
-            Indigenous-First Emergency Response Platform • Patent-Protected Technology
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-400">
-            <span>LOGIQ™ Evidence Engine</span>
-            <span>•</span>
-            <span>SafeShare™ Records</span>
-            <span>•</span>
-            <span>SkyBridge™ Network</span>
-            <span>•</span>
-            <span>HERO OS™ Training</span>
-            <span>•</span>
-            <span>RAPTRnav™ Routing</span>
           </div>
         </div>
       </footer>
