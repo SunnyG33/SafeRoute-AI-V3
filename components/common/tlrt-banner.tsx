@@ -1,62 +1,51 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Badge } from "@/components/ui/badge"
-import { MapPin } from 'lucide-react'
-import { cn } from "@/lib/utils"
+import { useMemo } from "react"
+import { territoriesAt } from "@/data/tlrt-territories"
+import { useGeolocation } from "@/hooks/use-geolocation"
+import { AlertTriangle } from 'lucide-react'
 
-interface Props {
-  className?: string
-}
+export default function TLRTBanner({ className = "" }: { className?: string }) {
+  const { coords } = useGeolocation()
 
-export default function TLRTBanner({ className }: Props) {
-  const [text, setText] = useState<string>("Enable location to recognize traditional territory")
-  const [active, setActive] = useState(false)
+  const terr = useMemo(() => {
+    if (!coords) return []
+    return territoriesAt(coords.lat, coords.lng)
+  }, [coords])
 
-  useEffect(() => {
-    if (!("geolocation" in navigator)) return
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude: lat, longitude: lng } = pos.coords
-        // Demo heuristic for Vancouver core
-        const inVancouver = lat > 49.2 && lat < 49.35 && lng > -123.26 && lng < -123.02
-        if (inVancouver) {
-          setText("Traditional Land Recognition: Musqueam, Squamish, and Tsleil-Waututh (Coast Salish Territories)")
-          setActive(true)
-        } else {
-          setText("Traditional Land Recognition: Territory identified (demo)")
-          setActive(true)
-        }
-      },
-      () => {
-        setText("Location unavailable. Showing generic territory message.")
-        setActive(false)
-      },
-      { enableHighAccuracy: true, timeout: 7000 },
+  if (!coords) {
+    return (
+      <div className={`rounded border bg-purple-50 border-purple-300 p-3 text-sm ${className}`}>
+        Determining your location to show traditional lands respectfully…
+      </div>
     )
-  }, [])
+  }
+
+  if (!terr.length) {
+    return (
+      <div className={`rounded border bg-purple-50 border-purple-300 p-3 text-sm ${className}`}>
+        No territory match in demo dataset. This map is approximate and for demonstration only.
+      </div>
+    )
+  }
 
   return (
-    <div
-      className={cn(
-        "w-full rounded-lg border-2 p-3 flex items-center gap-2",
-        active
-          ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-          : "bg-slate-50 border-slate-200 text-slate-700",
-        className,
-      )}
-      role="status"
-      aria-live="polite"
-    >
-      <MapPin className={cn("h-4 w-4", active ? "text-emerald-700" : "text-slate-600")} />
-      <span className="text-sm font-medium">{text}</span>
-      <div className="ml-auto">
-        <Badge variant="outline" className={active ? "border-emerald-400" : "border-slate-300"}>
-          TLRT demo
-        </Badge>
+    <div className={`rounded border-l-4 border-l-purple-600 bg-purple-50 p-3 ${className}`}>
+      <div className="text-sm text-purple-900">
+        <div className="font-semibold">Traditional Lands Overview</div>
+        <ul className="list-disc ml-5">
+          {terr.map((t) => (
+            <li key={t.id}>
+              <span className="font-medium">{t.name}</span>
+              {t.people ? <span className="text-purple-800">{` • ${t.people}`}</span> : null}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-2 text-xs text-purple-800 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4" />
+          These boundaries are approximate for demo only. Seek consent and guidance from the Nations involved.
+        </div>
       </div>
     </div>
   )
 }
-
-export { TLRTBanner }

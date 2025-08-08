@@ -7,6 +7,7 @@ import AlertFeed from "@/components/bodyguard/alert-feed"
 import { LegalBanner } from "@/components/common/legal-banner"
 import { EvidenceBadge } from "@/components/common/evidence-badge"
 import LanguageSwitcher from "@/components/common/language-switcher"
+import AccessibilityToolbar from "@/components/common/accessibility-toolbar"
 
 export default function CivilianPortalPage() {
   return (
@@ -35,6 +36,7 @@ export default function CivilianPortalPage() {
                 Open Hero Mode
               </Button>
             </Link>
+            <AccessibilityToolbar />
             <EvidenceBadge moduleKey="civilian-portal" />
             <LanguageSwitcher />
             <Link href="/about/master-context">

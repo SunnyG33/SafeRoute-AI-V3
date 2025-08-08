@@ -4,7 +4,10 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Navigation, Phone, Clock, Zap, AlertTriangle, CheckCircle, ArrowRight } from "lucide-react"
+import { MapPin, Navigation, Phone, Clock, Zap, AlertTriangle, CheckCircle, ArrowRight, Landmark } from 'lucide-react'
+import TLRTBanner from "@/components/common/tlrt-banner"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 interface AEDLocation {
   id: string
@@ -35,6 +38,7 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
   const [isLoading, setIsLoading] = useState(true)
   const [locationError, setLocationError] = useState<string | null>(null)
   const [searchRadius, setSearchRadius] = useState(1) // km
+  const [showLand, setShowLand] = useState(false)
 
   // Mock AED data - in real app this would come from API
   const mockAEDs: AEDLocation[] = [
@@ -241,9 +245,15 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
               ← Back
             </Button>
           )}
+          <div className="flex items-center gap-2">
+            <Landmark className="w-4 h-4 text-purple-700" />
+            <Switch id="land" checked={showLand} onCheckedChange={setShowLand} />
+            <Label htmlFor="land" className="text-sm">Land Overview</Label>
+          </div>
         </div>
 
         {/* Emergency Alert */}
+        {showLand ? <TLRTBanner className="mb-4" /> : null}
         {emergencyMode && (
           <Card className="mb-6 border-red-500 bg-red-100">
             <CardContent className="p-4">

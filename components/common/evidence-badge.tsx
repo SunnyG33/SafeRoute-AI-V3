@@ -1,65 +1,49 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { evidenceRegistry } from "@/data/evidence-registry"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Info } from 'lucide-react'
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { BookOpenCheck } from 'lucide-react'
+import { evidenceRegistry, type ModuleKey } from "@/data/evidence-registry"
 
-type Props = {
-  moduleKey: keyof typeof evidenceRegistry
-  className?: string
-}
-
-export default function EvidenceBadge({ moduleKey, className }: Props) {
-  const [open, setOpen] = useState(false)
-  const entry = useMemo(() => evidenceRegistry[moduleKey], [moduleKey])
-
-  if (!entry) return null
+export function EvidenceBadge({ moduleKey }: { moduleKey: ModuleKey }) {
+  const items = evidenceRegistry[moduleKey] ?? []
 
   return (
-    <div className={cn("relative", className)}>
-      <Button
-        variant="outline"
-        className="border-2"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-controls={`evidence-${moduleKey}`}
-      >
-        <Info className="h-4 w-4 mr-2" />
-        Evidence
-      </Button>
-
-      {open && (
-        <div
-          id={`evidence-${moduleKey}`}
-          className="absolute right-0 mt-2 w-[360px] max-w-[92vw] rounded-lg border-2 border-slate-300 bg-white shadow-lg p-3 z-50"
-          role="dialog"
-          aria-label={`${entry.title} evidence sources`}
-        >
-          <div className="mb-2">
-            <div className="text-sm font-semibold">{entry.title}</div>
-            {entry.description && <div className="text-xs text-slate-600">{entry.description}</div>}
-          </div>
-          <div className="space-y-2 max-h-64 overflow-auto pr-1">
-            {entry.sources.map((s, i) => (
-              <div key={i} className="text-xs">
-                <div className="font-medium text-slate-800 break-words">{s.path}</div>
-                <div className="text-slate-600">{s.why}</div>
-              </div>
-            ))}
-          </div>
-          <div className="pt-2 flex items-center justify-between">
-            <Badge className="bg-slate-100 text-slate-700 border-2 border-slate-400">Traceability</Badge>
-            <Button variant="outline" size="sm" className="border-2" onClick={() => setOpen(false)}>
-              Close
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="border-2" title="Evidence notes" aria-label="Evidence notes">
+          <BookOpenCheck className="h-4 w-4 mr-2" />
+          Evidence
+          <Badge variant="outline" className="ml-2">v1</Badge>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-80">
+        <DropdownMenuLabel>Evidence Sources</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {items.length === 0 ? (
+          <DropdownMenuItem disabled>No evidence entries</DropdownMenuItem>
+        ) : (
+          items.map((it, idx) => (
+            <DropdownMenuItem key={idx} className="flex flex-col items-start">
+              <span className="font-medium">{it.title}</span>
+              <span className="text-xs text-muted-foreground">{it.path}</span>
+              {it.note ? <span className="text-xs">{it.note}</span> : null}
+            </DropdownMenuItem>
+          ))
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem disabled className="text-xs">
+          Paths refer to in-repo docs for reviewer traceability.
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
-
-export { EvidenceBadge }

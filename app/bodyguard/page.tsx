@@ -6,6 +6,8 @@ import AlertFeed from "@/components/bodyguard/alert-feed"
 import EvacuationMap from "@/components/bodyguard/evacuation-map"
 import LabBeacon from "@/components/bodyguard/lab-beacon"
 import { ShieldAlert } from 'lucide-react'
+import { EvidenceBadge } from "@/components/common/evidence-badge"
+import { AccessibilityToolbar } from "@/components/common/accessibility-toolbar"
 
 export default function BodyGuardPage() {
   return (
@@ -23,6 +25,8 @@ export default function BodyGuardPage() {
             <Link href="/responder-portal">
               <Button className="border-2 bg-slate-900 text-white">Responder Portal</Button>
             </Link>
+            <AccessibilityToolbar />
+            <EvidenceBadge moduleKey="bodyguard" />
           </div>
         </div>
       </header>

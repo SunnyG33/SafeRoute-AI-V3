@@ -7,11 +7,16 @@ import type { AlertRecord } from "@/types/alert"
 import { Map } from 'lucide-react'
 import { useGeolocation } from "@/hooks/use-geolocation"
 import { haversineMeters } from "@/lib/geo"
+import TLRTBanner from "@/components/common/tlrt-banner"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Landmark } from 'lucide-react'
 
 export default function EvacuationMap() {
   const { coords, loading: geoLoading, error: geoError, refresh } = useGeolocation()
   const [alerts, setAlerts] = useState<AlertRecord[]>([])
   const [selected, setSelected] = useState<string | null>(null)
+  const [showLand, setShowLand] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -56,10 +61,16 @@ export default function EvacuationMap() {
             ))}
           </select>
           <Button variant="outline" onClick={refresh}>{geoLoading ? "Locating..." : "Update Location"}</Button>
+          <div className="flex items-center gap-2">
+            <Landmark className="h-4 w-4 text-purple-700" />
+            <Switch id="land" checked={showLand} onCheckedChange={setShowLand} />
+            <Label htmlFor="land" className="text-sm">Land Overview</Label>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="grid gap-3">
         {geoError ? <div className="text-sm text-red-600">{geoError}</div> : null}
+        {showLand ? <TLRTBanner /> : null}
         <div className="rounded border bg-slate-50 aspect-video grid place-items-center text-slate-600">
           {"Map preview placeholder (offline-safe). Visual map integration can be added later."}
         </div>

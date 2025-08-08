@@ -88,3 +88,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Jumbo Mode: increase root font-size for rem-based scaling */
+html[data-jumbo='true'] {
+  font-size: 18px;
+}
+
+/* High Contrast tweaks */
+html[data-high-contrast='true'] {
+  --tw-ring-color: #000;
+}
+html[data-high-contrast='true'] *:focus {
+  outline: 3px solid #000 !important;
+  outline-offset: 2px;
+}
+html[data-high-contrast='true'] .text-slate-600 { color: #111827 !important; }
+html[data-high-contrast='true'] .text-slate-500 { color: #111827 !important; }
+html[data-high-contrast='true'] .bg-slate-50 { background-color: #ffffff !important; }

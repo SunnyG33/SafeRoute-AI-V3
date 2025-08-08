@@ -1,46 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Globe } from 'lucide-react'
-
-const SUPPORTED = [
-  { code: "en", label: "EN" },
-  { code: "fr", label: "FR" },
-  { code: "hlk", label: "HLK" } // Halq’eméylem placeholder
-] as const
+import { useI18n } from "@/components/providers/i18n-provider"
 
 export default function LanguageSwitcher() {
-  const [lang, setLang] = useState<string>("en")
-
-  useEffect(() => {
-    const saved = localStorage.getItem("sr_lang")
-    if (saved) setLang(saved)
-  }, [])
-
-  function set(code: string) {
-    setLang(code)
-    localStorage.setItem("sr_lang", code)
-  }
+  const { lang, setLang, t } = useI18n()
 
   return (
-    <div className="flex items-center gap-1">
-      <Globe className="h-4 w-4 text-slate-600" aria-hidden />
-      {SUPPORTED.map((l) => (
-        <Button
-          key={l.code}
-          size="sm"
-          variant={lang === l.code ? "default" : "outline"}
-          className={lang === l.code ? "border-2 border-black" : "border-2"}
-          onClick={() => set(l.code)}
-          aria-pressed={lang === l.code}
-          aria-label={`Set language to ${l.label}`}
-        >
-          {l.label}
-        </Button>
-      ))}
-    </div>
+    <label className="inline-flex items-center gap-2 text-sm">
+      <span className="sr-only">{t("language")}</span>
+      <select
+        aria-label={t("language")}
+        className="border rounded px-2 py-1"
+        value={lang}
+        onChange={(e) => setLang(e.target.value as any)}
+      >
+        <option value="en">EN</option>
+        <option value="fr">FR</option>
+        <option value="hlk">HLK</option>
+      </select>
+    </label>
   )
 }
-
-export { LanguageSwitcher }
