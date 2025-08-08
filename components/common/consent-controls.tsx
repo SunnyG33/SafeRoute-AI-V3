@@ -1,156 +1,179 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Lock, Unlock, Shield, Trash2 } from 'lucide-react'
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
-interface ConsentToken {
-  id: string
-  incidentId: string
+type Item = {
+  token: string
   fields: string[]
+  note?: string
   issuedAt: number
   revokedAt?: number
 }
 
-interface ConsentControlsProps {
-  incidentId: string
-}
+export function ConsentControls({ incidentId }: { incidentId: string }) {
+  const [items, setItems] = useState<Item[]>([])
+  const [note, setNote] = useState("")
+  const [fields, setFields] = useState<Record<string, boolean>>({
+    name: true,
+    age: true,
+    bloodType: false,
+    allergies: false,
+    medications: false,
+    conditions: false,
+  })
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
-export function ConsentControls({ incidentId }: ConsentControlsProps) {
-  const [tokens, setTokens] = useState<ConsentToken[]>([])
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    loadTokens()
-  }, [incidentId])
-
-  async function loadTokens() {
+  async function parseJsonSafe(res: Response) {
+    const ct = res.headers.get("content-type") || ""
+    if (ct.includes("application/json")) return res.json()
+    const text = await res.text().catch(() => "")
     try {
-      const res = await fetch(`/api/consent/${incidentId}`)
-      const data = await res.json()
-      setTokens(data.tokens || [])
-    } catch (error) {
-      console.error("Failed to load consent tokens:", error)
+      return JSON.parse(text)
+    } catch {
+      throw new Error(`Expected JSON, got: ${text.slice(0, 120) || "empty"}`)
     }
   }
 
-  async function issueToken() {
-    setLoading(true)
+  async function refresh() {
+    setError(null)
     try {
+      const res = await fetch(`/api/consent/${incidentId}`, { cache: "no-store" })
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "")
+        throw new Error(`HTTP ${res.status} ${msg.slice(0, 120)}`)
+      }
+      const data = await parseJsonSafe(res)
+      setItems(Array.isArray(data.items) ? (data.items as Item[]) : [])
+    } catch (e: any) {
+      console.error("Failed to load consent tokens:", e)
+      setItems([])
+      setError("Consent service is temporarily unavailable. Please try again.")
+    }
+  }
+
+  useEffect(() => {
+    refresh()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incidentId])
+
+  async function issue() {
+    setBusy(true)
+    setError(null)
+    try {
+      const payload = {
+        fields: Object.entries(fields)
+          .filter(([, v]) => v)
+          .map(([k]) => k),
+        note: note || undefined,
+      }
       const res = await fetch(`/api/consent/${incidentId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fields: ["basic_info", "location", "medical_summary"] })
+        body: JSON.stringify(payload),
       })
-      const data = await res.json()
-      if (data.token) {
-        await loadTokens()
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "")
+        throw new Error(`Issue failed: HTTP ${res.status} ${msg.slice(0, 120)}`)
       }
-    } catch (error) {
-      console.error("Failed to issue consent token:", error)
+      setNote("")
+      await refresh()
+    } catch (e: any) {
+      console.error(e)
+      setError("Could not issue consent token.")
     } finally {
-      setLoading(false)
+      setBusy(false)
     }
   }
 
-  async function revokeToken(tokenId: string) {
+  async function revoke(token: string) {
+    setBusy(true)
+    setError(null)
     try {
-      await fetch(`/api/consent/${incidentId}`, {
+      const res = await fetch(`/api/consent/${incidentId}?token=${encodeURIComponent(token)}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokenId })
       })
-      await loadTokens()
-    } catch (error) {
-      console.error("Failed to revoke consent token:", error)
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "")
+        throw new Error(`Revoke failed: HTTP ${res.status} ${msg.slice(0, 120)}`)
+      }
+      await refresh()
+    } catch (e: any) {
+      console.error(e)
+      setError("Could not revoke consent token.")
+    } finally {
+      setBusy(false)
     }
   }
-
-  const activeTokens = tokens.filter(t => !t.revokedAt)
-  const revokedTokens = tokens.filter(t => t.revokedAt)
 
   return (
-    <Card className="border">
-      <CardHeader className="py-2">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Shield className="h-4 w-4" /> Consent Tokens
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="text-sm space-y-3">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium">Active Consents</span>
-            <Button
-              size="sm"
-              onClick={issueToken}
-              disabled={loading}
-              className="border-2"
-            >
-              <Lock className="h-3 w-3 mr-1" />
-              Issue Token
-            </Button>
-          </div>
-          
-          {activeTokens.length === 0 ? (
-            <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded p-2">
-              No active consent tokens
-            </div>
+    <div className="rounded border p-3 bg-white">
+      <div className="text-sm font-semibold">Consent Tokens</div>
+      <div className="mt-2 text-xs text-slate-600">
+        Issue or revoke consent tokens for field-level sharing.
+      </div>
+
+      {error ? (
+        <Alert variant="destructive" className="mt-2">
+          <AlertDescription className="text-xs">{error}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
+        {Object.keys(fields).map((k) => (
+          <label key={k} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={fields[k]}
+              onChange={(e) => setFields((f) => ({ ...f, [k]: e.target.checked }))}
+              aria-label={`Share ${k}`}
+            />
+            {k}
+          </label>
+        ))}
+      </div>
+
+      <input
+        className="mt-2 w-full border rounded px-2 py-1 text-sm"
+        placeholder="Optional note"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+      <div className="mt-2">
+        <Button className="border-2" onClick={issue} disabled={busy}>
+          {busy ? "Working..." : "Issue Token"}
+        </Button>
+      </div>
+
+      <div className="mt-3 text-sm">
+        <div className="font-medium mb-1">Issued</div>
+        <div className="space-y-2 max-h-48 overflow-auto">
+          {items.length === 0 ? (
+            <div className="text-slate-500 text-sm">None</div>
           ) : (
-            <div className="space-y-2">
-              {activeTokens.map(token => (
-                <div key={token.id} className="bg-green-50 border border-green-200 rounded p-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <Badge variant="outline" className="text-xs bg-green-100 border-green-300">
-                      Active
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => revokeToken(token.id)}
-                      className="h-6 px-2 text-xs border-red-300 text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-3 w-3" />
+            items.map((it) => (
+              <div key={it.token} className="border rounded p-2">
+                <div className="text-xs text-slate-600">Fields: {it.fields.join(", ") || "—"}</div>
+                {it.note ? <div className="text-xs">Note: {it.note}</div> : null}
+                <div className="text-xs">Issued: {new Date(it.issuedAt).toLocaleString()}</div>
+                {it.revokedAt ? (
+                  <div className="text-xs text-red-700">
+                    Revoked: {new Date(it.revokedAt).toLocaleString()}
+                  </div>
+                ) : (
+                  <div className="mt-2">
+                    <Button variant="outline" className="border-2" onClick={() => revoke(it.token)} disabled={busy}>
+                      Revoke
                     </Button>
                   </div>
-                  <div className="text-xs text-green-700">
-                    Fields: {token.fields.join(", ")}
-                  </div>
-                  <div className="text-xs text-green-600">
-                    Issued: {new Date(token.issuedAt).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
+                )}
+              </div>
+            ))
           )}
         </div>
-
-        {revokedTokens.length > 0 && (
-          <div className="space-y-2">
-            <div className="text-xs font-medium">Revoked Consents</div>
-            <div className="space-y-1">
-              {revokedTokens.slice(0, 2).map(token => (
-                <div key={token.id} className="bg-gray-50 border border-gray-200 rounded p-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline" className="text-xs bg-gray-100 border-gray-300">
-                      Revoked
-                    </Badge>
-                    <Unlock className="h-3 w-3 text-gray-500" />
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    Revoked: {new Date(token.revokedAt!).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded p-2">
-          🔒 Demo consent system. Tokens are JWT-signed and stored in Redis when available.
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

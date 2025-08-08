@@ -8,6 +8,7 @@ import { MapPin, Navigation, Phone, Clock, Zap, AlertTriangle, CheckCircle, Arro
 import TLRTBanner from "@/components/common/tlrt-banner"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { DataBadge } from "@/components/common/data-badge"
 
 interface AEDLocation {
   id: string
@@ -238,6 +239,9 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
             <div>
               <h1 className="text-2xl font-bold text-red-800">AED Finder</h1>
               <p className="text-sm text-gray-600">Automated External Defibrillators Near You</p>
+              <div className="mt-1">
+                <DataBadge source="mock" title="This list uses simulated data for demo purposes." />
+              </div>
             </div>
           </div>
           {onBack && (
@@ -311,6 +315,7 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
                 <Zap className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-semibold text-gray-600 mb-2">No AEDs Found</h3>
                 <p className="text-gray-500 mb-4">Try expanding your search radius or check your location settings.</p>
+                <p className="text-xs text-gray-500 mt-2">Demo environment: AED locations are simulated.</p>
                 <Button onClick={() => setSearchRadius(5)} className="bg-red-600 hover:bg-red-700">
                   Search 5km Radius
                 </Button>

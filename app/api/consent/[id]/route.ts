@@ -1,72 +1,54 @@
-import { NextRequest, NextResponse } from "next/server"
-import { issueConsentToken, revokeConsentToken, listConsentTokens } from "@/lib/consent-store"
-import { getRedis } from "@/lib/redis"
-import { webcrypto as nodeWebcrypto } from "node:crypto"
+import { NextResponse } from "next/server"
+import { issueConsent, listConsent, revokeConsent } from "@/lib/consent-store"
 
-type ConsentPayload = { fields?: string[]; expiresMinutes?: number; note?: string }
-
-// Prefer webcrypto.subtle if available
-const subtle: SubtleCrypto = (globalThis.crypto?.subtle as any) || (nodeWebcrypto.subtle as any)
-
-function b64u(input: string | Uint8Array) {
-  const buf = typeof input === "string" ? Buffer.from(input) : Buffer.from(input)
-  return buf.toString("base64url")
+// JSON helpers
+function json(data: any, status = 200) {
+  return new NextResponse(JSON.stringify(data), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  })
 }
 
-async function hmacSign(input: string, secret: string) {
-  const key = await subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  )
-  const sig = await subtle.sign("HMAC", key, new TextEncoder().encode(input))
-  return b64u(new Uint8Array(sig))
-}
-
-async function signToken(payload: Record<string, any>) {
-  const header = { alg: "HS256", typ: "JWT" }
-  const data = `${b64u(JSON.stringify(header))}.${b64u(JSON.stringify(payload))}`
-  const secret = (process.env.JWT_SECRET || process.env.MASTER_ENCRYPTION_KEY || "demo-secret") as string
-  const sig = await hmacSign(data, secret)
-  return `${data}.${sig}`
-}
-
-// Redis helpers
-async function redisList(incidentId: string): Promise<any[]> {
-  const r = getRedis()
-  if (!r) return listConsentTokens(incidentId)
-  const raw = await r.get(`sr:consent:${incidentId}`)
-  if (!raw) return []
+// GET /api/consent/:id -> { items: ConsentItem[] }
+export async function GET(_req: Request, { params }: { params: { id: string } }) {
   try {
-    const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) return parsed as any[]
-    return []
-  } catch {
-    return []
+    const items = await listConsent(params.id)
+    return json({ items }, 200)
+  } catch (err) {
+    console.error("[consent][GET] failed:", err)
+    // Never 500 on GET for demo reliability; return empty list with error code
+    return json({ items: [], error: "failed-to-list" }, 200)
   }
 }
 
-async function redisSave(incidentId: string, list: any[]) {
-  const r = getRedis()
-  if (!r) return
-  await r.set(`sr:consent:${incidentId}`, JSON.stringify(list))
+// POST /api/consent/:id -> body: { fields?: string[]; note?: string }
+export async function POST(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const body = await req.json().catch(() => ({}))
+    const fields = Array.isArray(body?.fields) ? (body.fields as string[]) : []
+    const note = typeof body?.note === "string" ? (body.note as string) : undefined
+    const item = await issueConsent(params.id, fields, note)
+    return json({ item }, 201)
+  } catch (err) {
+    console.error("[consent][POST] failed:", err)
+    return json({ error: "failed-to-issue" }, 500)
+  }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const tokens = await listConsentTokens(params.id)
-  return NextResponse.json({ tokens })
-}
-
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const { fields } = await req.json()
-  const token = await issueConsentToken(params.id, fields || [])
-  return NextResponse.json({ token })
-}
-
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const { tokenId } = await req.json()
-  const revoked = await revokeConsentToken(params.id, tokenId)
-  return NextResponse.json({ revoked })
+// DELETE /api/consent/:id?token=...
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const url = new URL(req.url)
+    const token = url.searchParams.get("token")
+    if (!token) return json({ error: "missing-token" }, 400)
+    const ok = await revokeConsent(params.id, token)
+    // For demos, treat missing token as ok=false (still 200)
+    return json({ ok }, 200)
+  } catch (err) {
+    console.error("[consent][DELETE] failed:", err)
+    return json({ ok: false, error: "failed-to-revoke" }, 500)
+  }
 }

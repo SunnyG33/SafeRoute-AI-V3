@@ -1,87 +1,69 @@
-import { redis } from "./redis"
-import { sign, verify } from "jsonwebtoken"
+// Simple, robust in-memory consent store for demos.
+// No Node-only imports. Safe in Next.js App Router and Next.js.
 
-const JWT_SECRET = process.env.JWT_SECRET || "demo-secret-key"
-const memoryStore = new Map<string, any>()
-
-export interface ConsentToken {
-  id: string
-  incidentId: string
+export type ConsentItem = {
+  token: string
   fields: string[]
+  note?: string
   issuedAt: number
   revokedAt?: number
 }
 
-export async function issueConsentToken(incidentId: string, fields: string[]): Promise<string> {
-  const token: ConsentToken = {
-    id: `consent_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-    incidentId,
-    fields,
-    issuedAt: Date.now(),
-  }
+type Store = Record<string, ConsentItem[]>
 
-  const key = `consent:${incidentId}:${token.id}`
-  
-  if (redis) {
-    await redis.set(key, JSON.stringify(token), { ex: 86400 }) // 24h expiry
-  } else {
-    memoryStore.set(key, token)
-  }
+// Module-scoped singleton
+const consentDB: Store = {}
 
-  return sign(token, JWT_SECRET, { expiresIn: "24h" })
+// Helpers
+function uid(prefix = "cns"): string {
+  // Use web crypto if available; fallback to Math.random
+  try {
+    const arr = new Uint8Array(16)
+    globalThis.crypto?.getRandomValues?.(arr)
+    const hex = Array.from(arr)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+    return `${prefix}_${hex.slice(0, 12)}`
+  } catch {
+    return `${prefix}_${Math.random().toString(36).slice(2, 12)}`
+  }
 }
 
-export async function revokeConsentToken(incidentId: string, tokenId: string): Promise<boolean> {
-  const key = `consent:${incidentId}:${tokenId}`
-  
-  let token: ConsentToken | null = null
-  if (redis) {
-    const data = await redis.get(key)
-    token = data ? JSON.parse(data as string) : null
-  } else {
-    token = memoryStore.get(key) || null
+function getList(incidentId: string): ConsentItem[] {
+  if (!consentDB[incidentId]) consentDB[incidentId] = []
+  return consentDB[incidentId]
+}
+
+// API
+export async function listConsent(incidentId: string): Promise<ConsentItem[]> {
+  // Return a shallow copy to avoid external mutation
+  return [...getList(incidentId)]
+}
+
+export async function issueConsent(
+  incidentId: string,
+  fields: string[] = [],
+  note?: string,
+): Promise<ConsentItem> {
+  const item: ConsentItem = {
+    token: uid("tok"),
+    fields: Array.isArray(fields) ? fields : [],
+    note: typeof note === "string" && note.trim() ? note.trim() : undefined,
+    issuedAt: Date.now(),
   }
+  getList(incidentId).push(item)
+  return item
+}
 
-  if (!token) return false
-
-  token.revokedAt = Date.now()
-  
-  if (redis) {
-    await redis.set(key, JSON.stringify(token), { ex: 86400 })
-  } else {
-    memoryStore.set(key, token)
-  }
-
+export async function revokeConsent(incidentId: string, token: string): Promise<boolean> {
+  const list = getList(incidentId)
+  const it = list.find((i) => i.token === token)
+  if (!it) return false
+  if (!it.revokedAt) it.revokedAt = Date.now()
   return true
 }
 
-export async function listConsentTokens(incidentId: string): Promise<ConsentToken[]> {
-  const pattern = `consent:${incidentId}:*`
-  const tokens: ConsentToken[] = []
-
-  if (redis) {
-    const keys = await redis.keys(pattern)
-    for (const key of keys) {
-      const data = await redis.get(key)
-      if (data) {
-        tokens.push(JSON.parse(data as string))
-      }
-    }
-  } else {
-    for (const [key, token] of memoryStore.entries()) {
-      if (key.startsWith(`consent:${incidentId}:`)) {
-        tokens.push(token)
-      }
-    }
-  }
-
-  return tokens.sort((a, b) => b.issuedAt - a.issuedAt)
-}
-
-export function verifyConsentToken(tokenString: string): ConsentToken | null {
-  try {
-    return verify(tokenString, JWT_SECRET) as ConsentToken
-  } catch {
-    return null
-  }
+// Optional utility for tests/demos
+export function _resetConsentStore() {
+  for (const k of Object.keys(consentDB)) delete consentDB[k]
 }

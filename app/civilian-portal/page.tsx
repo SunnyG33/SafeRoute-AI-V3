@@ -1,65 +1,48 @@
-import TLRTBanner from "@/components/common/tlrt-banner"
+"use client"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { SafeHeader } from "@/components/common/safe-header"
+import { CalmToggle } from "@/components/civilian/calm-toggle"
+import { QuickActions } from "@/components/civilian/quick-actions"
+import { HelpStepper } from "@/components/civilian/help-stepper"
 import SafetyCheckIn from "@/components/civilian/safety-check-in"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Heart, ShieldAlert, BookText } from 'lucide-react'
-import AlertFeed from "@/components/bodyguard/alert-feed"
-import { LegalBanner } from "@/components/common/legal-banner"
-import { EvidenceBadge } from "@/components/common/evidence-badge"
-import LanguageSwitcher from "@/components/common/language-switcher"
-import AccessibilityToolbar from "@/components/common/accessibility-toolbar"
+import { BottomSafeBar } from "@/components/civilian/bottom-safe-bar"
 
 export default function CivilianPortalPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <header className="sticky top-0 z-10 border-b bg-white/90 backdrop-blur">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/landing">
-              <Button variant="outline" className="border-2">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-            <h1 className="text-xl font-bold">Civilian Portal</h1>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/bodyguard">
-              <Button variant="outline" className="border-2">
-                <ShieldAlert className="h-4 w-4 mr-2" />
-                BodyGuard
-              </Button>
-            </Link>
-            <Link href="/hero-mode-landing">
-              <Button className="bg-red-600 text-white border-2 border-black">
-                <Heart className="h-4 w-4 mr-2" />
-                Open Hero Mode
-              </Button>
-            </Link>
-            <AccessibilityToolbar />
-            <EvidenceBadge moduleKey="civilian-portal" />
-            <LanguageSwitcher />
-            <Link href="/about/master-context">
-              <Button variant="outline" className="border-2">
-                <BookText className="h-4 w-4 mr-2" />
-                Master Context
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+    <main className="min-h-[100dvh] bg-slate-50 pb-20">
+      <SafeHeader title="Civilian Portal" right={<CalmToggle />} />
+      <section className="mx-auto max-w-6xl px-3 sm:px-4 py-4 grid gap-4">
+        <Card className="border-l-8 border-l-emerald-600">
+          <CardHeader>
+            <CardTitle className="text-lg">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <QuickActions />
+          </CardContent>
+        </Card>
 
-      <section className="container mx-auto px-4 pt-4">
-        <LegalBanner context={["beta","emergency","ai-assist"]} />
-      </section>
+        <div className="grid lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-lg">Safety Check-In</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SafetyCheckIn />
+            </CardContent>
+          </Card>
 
-      <section className="container mx-auto px-4 py-6">
-        <TLRTBanner className="mb-6" />
-        <div className="mb-6">
-          <AlertFeed title="Emergency Alerts Near You" showAdminControls={false} compact nearbyFilter={{ lat: 49.2827, lng: -123.1207, radiusMeters: 5000 }} />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Need help fast?</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <HelpStepper />
+            </CardContent>
+          </Card>
         </div>
-        <SafetyCheckIn />
       </section>
+      <BottomSafeBar />
     </main>
   )
 }

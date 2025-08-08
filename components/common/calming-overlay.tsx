@@ -1,108 +1,81 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Volume2, VolumeX } from 'lucide-react'
+import { X } from 'lucide-react'
 
-interface CalmingOverlayProps {
-  isActive: boolean
-  onClose: () => void
+export function CalmingOverlayButton() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button className="border-2" variant="outline" onClick={() => setOpen(true)}>
+        Open Calming Overlay
+      </Button>
+      {open && <CalmingOverlay onClose={() => setOpen(false)} />}
+    </>
+  )
 }
 
-export function CalmingOverlay({ isActive, onClose }: CalmingOverlayProps) {
-  const [breathePhase, setBreathePhase] = useState<"in" | "hold" | "out">("in")
+export function CalmingOverlay({ onClose }: { onClose: () => void }) {
+  const [phase, setPhase] = useState<"inhale" | "hold" | "exhale">("inhale")
   const [count, setCount] = useState(4)
-  const [audioEnabled, setAudioEnabled] = useState(false)
+  const timerRef = useRef<number | null>(null)
 
+  // Simple 4-4-4 breathing loop
   useEffect(() => {
-    if (!isActive) return
-
-    const interval = setInterval(() => {
-      setCount((prev) => {
-        if (prev <= 1) {
-          setBreathePhase((phase) => {
-            if (phase === "in") return "hold"
-            if (phase === "hold") return "out"
-            return "in"
-          })
-          return 4
-        }
-        return prev - 1
+    timerRef.current = window.setInterval(() => {
+      setCount((c) => {
+        if (c > 1) return c - 1
+        // rotate phase
+        setPhase((p) => (p === "inhale" ? "hold" : p === "hold" ? "exhale" : "inhale"))
+        return 4
       })
     }, 1000)
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current)
+    }
+  }, [])
 
-    return () => clearInterval(interval)
-  }, [isActive])
-
+  // Prevent background scroll
   useEffect(() => {
-    if (!audioEnabled || !isActive) return
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return
-
-    const messages = {
-      in: "Breathe in slowly",
-      hold: "Hold your breath",
-      out: "Breathe out slowly"
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
     }
+  }, [])
 
-    if (count === 4) {
-      const utterance = new SpeechSynthesisUtterance(messages[breathePhase])
-      utterance.rate = 0.8
-      utterance.pitch = 0.9
-      window.speechSynthesis.speak(utterance)
-    }
-  }, [breathePhase, count, audioEnabled, isActive])
-
-  if (!isActive) return null
-
-  const phaseText = {
-    in: "Breathe In",
-    hold: "Hold",
-    out: "Breathe Out"
-  }
-
-  const circleScale = breathePhase === "in" ? "scale-150" : breathePhase === "hold" ? "scale-150" : "scale-100"
+  const instruction =
+    phase === "inhale" ? "Inhale slowly" : phase === "hold" ? "Hold gently" : "Exhale slowly"
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md text-center border-none shadow-2xl bg-white/90 backdrop-blur">
-        <CardContent className="p-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Take a Moment</h2>
-            <p className="text-gray-600">Let's breathe together and stay calm</p>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4">
+      <Card className="w-full max-w-md border-2">
+        <CardContent className="p-6 grid place-items-center gap-4">
+          <button
+            aria-label="Close calming overlay"
+            onClick={onClose}
+            className="absolute top-2 right-2 p-2 rounded hover:bg-slate-100"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <div className="text-lg font-semibold">Calming Overlay</div>
+          <div className="relative h-48 w-48">
+            <div
+              className={`absolute inset-0 rounded-full bg-emerald-200/60 border-2 border-emerald-400 transition-all duration-1000`}
+              style={{
+                transform:
+                  phase === "inhale" ? "scale(1.0)" : phase === "hold" ? "scale(1.1)" : "scale(0.9)",
+              }}
+            />
           </div>
-
-          <div className="mb-8 flex justify-center">
-            <div className={`w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center transition-transform duration-1000 ${circleScale}`}>
-              <Heart className="w-12 h-12 text-white" />
-            </div>
+          <div className="text-emerald-800 font-medium">{instruction}</div>
+          <div className="text-slate-600">Next in: {count}</div>
+          <div className="text-xs text-slate-500 text-center">
+            This simple 4-4-4 breathing pattern can reduce panic and improve focus. Use as needed.
           </div>
-
-          <div className="mb-6">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{phaseText[breathePhase]}</div>
-            <div className="text-6xl font-mono text-blue-600">{count}</div>
-          </div>
-
-          <div className="flex justify-center gap-4 mb-6">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setAudioEnabled(!audioEnabled)}
-              className="border-2"
-            >
-              {audioEnabled ? <Volume2 className="h-4 w-4 mr-2" /> : <VolumeX className="h-4 w-4 mr-2" />}
-              {audioEnabled ? "Audio On" : "Audio Off"}
-            </Button>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600">
-              You're doing great. Help is on the way.
-            </p>
-            <Button onClick={onClose} className="w-full bg-green-600 hover:bg-green-700 text-white">
-              I'm Ready to Continue
-            </Button>
-          </div>
+          <Button className="border-2" onClick={onClose}>Close</Button>
         </CardContent>
       </Card>
     </div>

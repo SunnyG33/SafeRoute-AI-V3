@@ -43,6 +43,8 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --calm-text-scale: 1;
+    --calm-space-scale: 1;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -77,6 +79,8 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --calm-text-scale: 1;
+    --calm-space-scale: 1;
   }
 }
 
@@ -89,19 +93,22 @@
   }
 }
 
-/* Jumbo Mode: increase root font-size for rem-based scaling */
-html[data-jumbo='true'] {
-  font-size: 18px;
+/* Calm Mode increases legibility and touch targets slightly */
+html[data-calm="true"] {
+  --calm-text-scale: 1.075;
+  --calm-space-scale: 1.1;
 }
 
-/* High Contrast tweaks */
-html[data-high-contrast='true'] {
-  --tw-ring-color: #000;
+html, body {
+  font-size: calc(16px * var(--calm-text-scale));
 }
-html[data-high-contrast='true'] *:focus {
-  outline: 3px solid #000 !important;
-  outline-offset: 2px;
+
+button, a, input, textarea, select {
+  /* increase tap area slightly in calm mode */
+  min-height: calc(2.5rem * var(--calm-space-scale));
 }
-html[data-high-contrast='true'] .text-slate-600 { color: #111827 !important; }
-html[data-high-contrast='true'] .text-slate-500 { color: #111827 !important; }
-html[data-high-contrast='true'] .bg-slate-50 { background-color: #ffffff !important; }
+
+.card, .rounded, .border, .p-3, .p-4, .p-2 {
+  /* ensure a touch more padding in calm mode without changing Tailwind classes */
+  padding: calc(var(--tw-padding-y, 0) * var(--calm-space-scale)) calc(var(--tw-padding-x, 0) * var(--calm-space-scale));
+}
