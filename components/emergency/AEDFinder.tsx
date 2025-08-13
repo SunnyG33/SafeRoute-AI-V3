@@ -4,7 +4,18 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Navigation, Phone, Clock, Zap, AlertTriangle, CheckCircle, ArrowRight } from "lucide-react"
+import {
+  MapPin,
+  Navigation,
+  Phone,
+  Clock,
+  Zap,
+  AlertTriangle,
+  CheckCircle,
+  ArrowRight,
+  Search,
+  RefreshCw,
+} from "lucide-react"
 
 interface AEDLocation {
   id: string
@@ -157,11 +168,11 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
   const getAvailabilityColor = (availability: AEDLocation["availability"]) => {
     switch (availability) {
       case "available":
-        return "bg-green-600"
+        return "bg-gradient-to-r from-green-500 to-emerald-500"
       case "in-use":
-        return "bg-yellow-600"
+        return "bg-gradient-to-r from-yellow-500 to-orange-500"
       case "maintenance":
-        return "bg-red-600"
+        return "bg-gradient-to-r from-red-500 to-pink-500"
       default:
         return "bg-gray-600"
     }
@@ -212,12 +223,19 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
           <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-            <h2 className="text-xl font-bold text-red-800 mb-2">Finding Nearby AEDs</h2>
-            <p className="text-gray-600">Getting your location and searching for AED devices...</p>
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-full animate-spin">
+                <div className="absolute inset-2 bg-white rounded-full"></div>
+              </div>
+              <Zap className="absolute inset-0 m-auto w-8 h-8 text-red-600 animate-pulse" />
+            </div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-3">
+              Finding Nearby AEDs
+            </h2>
+            <p className="text-gray-600 text-lg">Locating life-saving devices near you...</p>
           </CardContent>
         </Card>
       </div>
@@ -225,153 +243,216 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
   }
 
   return (
-    <div className={`min-h-screen ${emergencyMode ? "bg-red-50" : "bg-gray-50"} p-4`}>
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Zap className="w-8 h-8 text-red-600" />
-            <div>
-              <h1 className="text-2xl font-bold text-red-800">AED Finder</h1>
-              <p className="text-sm text-gray-600">Automated External Defibrillators Near You</p>
+    <div
+      className={`min-h-screen ${emergencyMode ? "bg-gradient-to-br from-red-100 via-red-50 to-orange-50" : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"} p-4`}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-0 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <CheckCircle className="w-3 h-3 text-white" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                  AED Finder™
+                </h1>
+                <p className="text-gray-600 text-lg">Automated External Defibrillators Near You</p>
+              </div>
             </div>
+            {onBack && (
+              <Button
+                onClick={onBack}
+                variant="outline"
+                className="bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-gray-50 shadow-lg"
+              >
+                ← Back
+              </Button>
+            )}
           </div>
-          {onBack && (
-            <Button onClick={onBack} variant="outline" className="bg-white">
-              ← Back
-            </Button>
-          )}
         </div>
 
-        {/* Emergency Alert */}
         {emergencyMode && (
-          <Card className="mb-6 border-red-500 bg-red-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-                <div>
-                  <h3 className="font-bold text-red-800">EMERGENCY MODE ACTIVE</h3>
-                  <p className="text-red-700">Call 911 first, then get the nearest AED if needed</p>
+          <Card className="mb-8 border-0 bg-gradient-to-r from-red-500 to-orange-500 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                  <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-white text-xl mb-1">EMERGENCY MODE ACTIVE</h3>
+                  <p className="text-white/90 text-lg">Call 911 first, then get the nearest AED if needed</p>
+                </div>
+                <Button
+                  onClick={() => (window.location.href = "tel:911")}
+                  className="bg-white text-red-600 hover:bg-gray-100 font-bold px-6 py-3 text-lg shadow-lg"
+                >
+                  📞 Call 911
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Location Status */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
+        <Card className="mb-8 border-0 bg-white/80 backdrop-blur-sm shadow-xl">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-white" />
+                </div>
                 <div>
-                  <p className="font-semibold">Your Location</p>
-                  <p className="text-sm text-gray-600">{locationError ? locationError : "Location found"}</p>
+                  <p className="font-bold text-gray-800 text-lg">Your Location</p>
+                  <p className="text-gray-600">{locationError ? locationError : "Location found successfully"}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Search radius:</span>
-                <select
-                  value={searchRadius}
-                  onChange={(e) => setSearchRadius(Number(e.target.value))}
-                  className="border rounded px-2 py-1 text-sm"
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600 font-medium">Search radius:</span>
+                  <select
+                    value={searchRadius}
+                    onChange={(e) => setSearchRadius(Number(e.target.value))}
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                  >
+                    <option value={0.5}>0.5 km</option>
+                    <option value={1}>1 km</option>
+                    <option value={2}>2 km</option>
+                    <option value={5}>5 km</option>
+                  </select>
+                </div>
+                <Button
+                  onClick={getCurrentLocation}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-gray-50 shadow-lg"
                 >
-                  <option value={0.5}>0.5 km</option>
-                  <option value={1}>1 km</option>
-                  <option value={2}>2 km</option>
-                  <option value={5}>5 km</option>
-                </select>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* AED List */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-800">Nearby AEDs ({nearbyAEDs.length} found)</h2>
-            <Button onClick={getCurrentLocation} variant="outline" size="sm" className="bg-white">
-              🔄 Refresh
-            </Button>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-800">Nearby AEDs</h2>
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 text-lg font-bold shadow-lg">
+              {nearbyAEDs.length} found
+            </Badge>
           </div>
+          <div className="flex items-center gap-2">
+            <Search className="w-5 h-5 text-gray-400" />
+            <span className="text-gray-600">Showing closest results</span>
+          </div>
+        </div>
 
-          {nearbyAEDs.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Zap className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No AEDs Found</h3>
-                <p className="text-gray-500 mb-4">Try expanding your search radius or check your location settings.</p>
-                <Button onClick={() => setSearchRadius(5)} className="bg-red-600 hover:bg-red-700">
-                  Search 5km Radius
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            nearbyAEDs.map((aed) => (
+        {nearbyAEDs.length === 0 ? (
+          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl">
+            <CardContent className="p-12 text-center">
+              <div className="w-24 h-24 bg-gradient-to-r from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Zap className="w-12 h-12 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-600 mb-3">No AEDs Found</h3>
+              <p className="text-gray-500 mb-6 text-lg">
+                Try expanding your search radius or check your location settings.
+              </p>
+              <Button
+                onClick={() => setSearchRadius(5)}
+                className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-bold shadow-lg"
+              >
+                Search 5km Radius
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {nearbyAEDs.map((aed, index) => (
               <Card
                 key={aed.id}
-                className={`transition-all duration-200 hover:shadow-lg ${
-                  selectedAED?.id === aed.id ? "ring-2 ring-red-500" : ""
+                className={`transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border-0 bg-white/90 backdrop-blur-sm ${
+                  selectedAED?.id === aed.id ? "ring-4 ring-red-400 shadow-2xl" : "shadow-xl"
                 } ${
                   aed.availability === "available"
-                    ? "border-green-200"
+                    ? "border-l-4 border-l-green-500"
                     : aed.availability === "in-use"
-                      ? "border-yellow-200"
-                      : "border-red-200"
+                      ? "border-l-4 border-l-yellow-500"
+                      : "border-l-4 border-l-red-500"
                 }`}
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                  animation: "fadeInUp 0.6s ease-out forwards",
+                }}
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">{getBuildingIcon(aed.buildingType)}</div>
-                      <div>
-                        <CardTitle className="text-lg text-gray-800">{aed.name}</CardTitle>
-                        <p className="text-sm text-gray-600">{aed.address}</p>
+                    <div className="flex items-start gap-4">
+                      <div className="text-4xl bg-gradient-to-r from-blue-100 to-purple-100 p-3 rounded-xl">
+                        {getBuildingIcon(aed.buildingType)}
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-xl text-gray-800 mb-2">{aed.name}</CardTitle>
+                        <p className="text-gray-600 text-base mb-3">{aed.address}</p>
+
+                        <div className="flex items-center gap-6 mb-3">
+                          <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
+                            <MapPin className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm font-bold text-blue-800">{aed.distance} km</span>
+                          </div>
+                          <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full">
+                            <Clock className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-bold text-green-800">{aed.walkTime} min walk</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <Badge className={`${getAvailabilityColor(aed.availability)} text-white`}>
+
+                    <Badge
+                      className={`${
+                        aed.availability === "available"
+                          ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                          : aed.availability === "in-use"
+                            ? "bg-gradient-to-r from-yellow-500 to-orange-500"
+                            : "bg-gradient-to-r from-red-500 to-pink-500"
+                      } text-white font-bold px-4 py-2 text-sm shadow-lg`}
+                    >
                       {getAvailabilityText(aed.availability)}
                     </Badge>
                   </div>
                 </CardHeader>
 
                 <CardContent className="pt-0">
-                  {/* Distance and Time */}
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-semibold">{aed.distance} km</span>
+                  <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-sm font-bold text-gray-700 mb-1">Access Hours</p>
+                        <p className="text-sm text-gray-600">{aed.accessHours}</p>
+                      </div>
+                      {aed.accessCode && (
+                        <div>
+                          <p className="text-sm font-bold text-blue-700 mb-1">Access Code</p>
+                          <p className="text-sm text-blue-600 font-mono bg-blue-50 px-2 py-1 rounded">
+                            {aed.accessCode}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm">{aed.walkTime} min walk</span>
+
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <p className="text-sm font-bold text-gray-700 mb-1">Location Details</p>
+                      <p className="text-sm text-gray-600">{aed.instructions}</p>
                     </div>
                   </div>
 
-                  {/* Access Hours */}
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-600">
-                      <strong>Access:</strong> {aed.accessHours}
-                    </p>
-                    {aed.accessCode && (
-                      <p className="text-sm text-blue-600">
-                        <strong>Access Code:</strong> {aed.accessCode}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Instructions */}
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-700">
-                      <strong>Location:</strong> {aed.instructions}
-                    </p>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-3 flex-wrap">
                     <Button
                       onClick={() => handleGetDirections(aed)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex-1 min-w-[140px] shadow-lg"
                       disabled={aed.availability === "maintenance"}
                     >
                       <Navigation className="w-4 h-4 mr-2" />
@@ -382,7 +463,7 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
                       <Button
                         onClick={() => handleCallLocation(aed.contactPhone!)}
                         variant="outline"
-                        className="bg-white"
+                        className="bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-gray-50 shadow-lg"
                       >
                         <Phone className="w-4 h-4 mr-2" />
                         Call
@@ -395,7 +476,7 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
                           setSelectedAED(aed)
                           onAEDSelected(aed)
                         }}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg"
                       >
                         <ArrowRight className="w-4 h-4 mr-2" />
                         Select AED
@@ -403,61 +484,73 @@ export default function AEDFinder({ onAEDSelected, onBack, emergencyMode = false
                     )}
                   </div>
 
-                  {/* Last Checked */}
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-xs text-gray-500">
-                      Last checked: {new Date(aed.lastChecked).toLocaleDateString()} at{" "}
-                      {new Date(aed.lastChecked).toLocaleTimeString()}
-                    </p>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-gray-500">
+                        Last verified: {new Date(aed.lastChecked).toLocaleDateString()} at{" "}
+                        {new Date(aed.lastChecked).toLocaleTimeString()}
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-green-600 font-medium">Live Status</span>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Emergency Instructions */}
-        <Card className="mt-8 border-red-200 bg-red-50">
-          <CardHeader>
-            <CardTitle className="text-red-800 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
+        <Card className="mt-12 border-0 bg-gradient-to-r from-red-50 to-orange-50 shadow-xl">
+          <CardHeader className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-t-xl">
+            <CardTitle className="text-xl flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
               AED Usage Instructions
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm text-red-700">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span>Call 911 first before getting AED</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span>Turn on AED and follow voice prompts</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span>Attach pads as shown in diagrams</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span>Stand clear when AED analyzes and shocks</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span>Continue CPR between AED cycles</span>
-              </div>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                "Call 911 first before getting AED",
+                "Turn on AED and follow voice prompts",
+                "Attach pads as shown in diagrams",
+                "Stand clear when AED analyzes and shocks",
+                "Continue CPR between AED cycles",
+              ].map((instruction, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+                  <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-sm">{index + 1}</span>
+                  </div>
+                  <span className="text-gray-700 font-medium">{instruction}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Legal Disclaimer */}
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <p className="text-xs text-gray-600 text-center">
+        <div className="mt-8 p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-0">
+          <p className="text-sm text-gray-600 text-center leading-relaxed">
             ⚠️ AED locations are provided for informational purposes only. Always call 911 first. Availability and access
             may change without notice. Verify AED functionality before use.
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }

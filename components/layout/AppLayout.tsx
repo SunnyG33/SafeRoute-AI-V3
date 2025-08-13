@@ -16,6 +16,7 @@ interface AppLayoutProps {
   nextLabel?: string
 }
 
+export { AppLayout }
 export default function AppLayout({
   children,
   title = "SafeRoute AI",
