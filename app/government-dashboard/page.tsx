@@ -8,8 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BackToHome } from "@/components/navigation/BackToHome"
-import { EvidenceBadge } from "@/components/common/evidence-badge"
-import { AccessibilityToolbar } from "@/components/common/accessibility-toolbar"
 
 export default function GovernmentDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -60,10 +58,6 @@ export default function GovernmentDashboard() {
               <span>🏛️ Indigenous Protocols: Compliant</span>
             </div>
             <span>👤 Government Admin Portal</span>
-          </div>
-          <div className="hidden md:flex items-center gap-2">
-            <AccessibilityToolbar />
-            <EvidenceBadge moduleKey="government-dashboard" />
           </div>
         </div>
       </div>
