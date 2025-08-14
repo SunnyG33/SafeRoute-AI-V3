@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,8 +10,24 @@ import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BackToHome } from "@/components/navigation/BackToHome"
 import FloatingEmergencyButtons from "@/components/emergency/FloatingEmergencyButtons"
+import { LiveIncidentFeed } from "@/components/realtime/LiveIncidentFeed"
+import { LiveCommunications } from "@/components/realtime/LiveCommunications"
+import { createClient } from "@/lib/supabase/client"
+import { Flame, Users, Award, MapPin, AlertTriangle } from "lucide-react"
+import Link from "next/link"
+
+interface User {
+  id: string
+  email: string
+  role: string
+  first_name: string
+  last_name: string
+}
 
 export default function GovernmentDashboard() {
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("overview")
   const [realTimeData, setRealTimeData] = useState({
     starlink_uptime: 99.94,
@@ -19,6 +36,102 @@ export default function GovernmentDashboard() {
     indigenous_communities_safe: 6,
     ai_predictions_accuracy: 94.7,
     cross_jurisdictional_coordination: 8,
+  })
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session) {
+        router.push("/auth/login")
+        return
+      }
+
+      // Check if user has government role
+      const { data: profile } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+
+      if (!profile || profile.role !== "government") {
+        router.push("/dashboard")
+        return
+      }
+
+      setUser(profile)
+      setLoading(false)
+    }
+
+    checkAuth()
+  }, [router])
+
+  useEffect(() => {
+    if (!user) return
+
+    const supabase = createClient()
+
+    // Fetch real emergency data
+    const fetchRealTimeData = async () => {
+      const { data: incidents } = await supabase.from("incidents").select("*").eq("status", "active")
+
+      const { data: heroes } = await supabase.from("users").select("*").eq("role", "responder").eq("status", "active")
+
+      if (incidents && heroes) {
+        setRealTimeData((prev) => ({
+          ...prev,
+          active_emergencies: incidents.length,
+          heroes_deployed: heroes.length,
+        }))
+      }
+    }
+
+    fetchRealTimeData()
+
+    // Set up real-time subscriptions
+    const incidentsSubscription = supabase
+      .channel("government-incidents")
+      .on("postgres_changes", { event: "*", schema: "public", table: "incidents" }, () => fetchRealTimeData())
+      .subscribe()
+
+    return () => {
+      incidentsSubscription.unsubscribe()
+    }
+  }, [user])
+
+  const [patentInnovations, setPatentInnovations] = useState({
+    aiDecisionEngine: {
+      responseTime: "2.3s",
+      accuracy: 94.7,
+      multiVariableAnalysis: true,
+      patentStatus: "Filed CA 3280894",
+      estimatedValue: "$18M",
+    },
+    indigenousProtocols: {
+      autoActivation: true,
+      complianceRate: 100,
+      culturalSiteProtection: 15,
+      tlrtAccuracy: 99.7,
+      ocapCompliance: 100,
+      patentStatus: "Filed CA 3280872",
+      estimatedValue: "$12M",
+    },
+    multiAgencyCoordination: {
+      activeAgencies: 8,
+      syncTime: "2.1s",
+      coordinationSuccess: 99.2,
+      crossJurisdictional: true,
+      patentStatus: "Filed CA 3280894",
+      estimatedValue: "$9M",
+    },
+    satelliteIntegration: {
+      dynamicBandwidth: true,
+      emergencyPriority: "MAX",
+      uptime: 99.94,
+      activeSatellites: 4847,
+      patentStatus: "Integrated Technology",
+      estimatedValue: "$8M",
+    },
   })
 
   // Simulate real-time updates for patent demonstration
@@ -34,6 +147,26 @@ export default function GovernmentDashboard() {
     }, 5000)
     return () => clearInterval(interval)
   }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-100 to-gray-200 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+            <svg viewBox="0 0 100 100" className="w-10 h-10 fill-white">
+              <circle cx="50" cy="15" r="8" />
+              <rect x="20" y="35" width="60" height="8" rx="4" />
+              <rect x="35" y="50" width="30" height="8" rx="4" />
+              <rect x="25" y="65" width="50" height="8" rx="4" />
+              <rect x="15" y="80" width="25" height="12" rx="6" />
+              <rect x="60" y="80" width="25" height="12" rx="6" />
+            </svg>
+          </div>
+          <p className="text-slate-600">Loading Government Dashboard...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     // Updated background to professional blue-gray gradient instead of purple
@@ -68,14 +201,53 @@ export default function GovernmentDashboard() {
               <span className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></span>
               <span className="text-slate-800">🏛️ Indigenous Protocols: Compliant</span>
             </div>
-            <span className="text-slate-800">👤 Government Admin Portal</span>
+            <span className="text-slate-800">
+              👤 {user?.first_name} {user?.last_name} - Government Admin
+            </span>
           </div>
         </div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-6">
+        <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-red-500/30 backdrop-blur-sm rounded-xl p-6 mb-6">
+          <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Flame className="w-5 h-5 text-red-600" />
+            Government Emergency Management Tools
+          </h3>
+          <p className="text-red-800 text-sm mb-4">
+            Access fire ban management, community reporting oversight, and hero network coordination
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/fire-ban-portal">
+              <Button className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold w-full sm:w-auto">
+                <Flame className="w-4 h-4 mr-2" />
+                Fire Ban Portal
+              </Button>
+            </Link>
+            <Link href="/wildfire-waze">
+              <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold w-full sm:w-auto">
+                <MapPin className="w-4 h-4 mr-2" />
+                Community Reports
+              </Button>
+            </Link>
+            <Link href="/community-portal">
+              <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold w-full sm:w-auto">
+                <Users className="w-4 h-4 mr-2" />
+                Community Hub
+              </Button>
+            </Link>
+            <Link href="/hero-profile">
+              <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold w-full sm:w-auto">
+                <Award className="w-4 h-4 mr-2" />
+                Hero Network
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Patent Innovation Highlight Banner */}
         <Alert className="mb-6 bg-blue-500/20 border border-blue-500/30 backdrop-blur-sm">
+          <AlertTriangle className="h-5 w-5 text-blue-600" />
           <AlertDescription className="text-blue-800">
             <strong>🔬 Patent Innovation Showcase:</strong> Real-time demonstration of AI-powered emergency coordination
             with satellite integration, cultural protocol automation, and predictive resource allocation across multiple
@@ -92,28 +264,22 @@ export default function GovernmentDashboard() {
               Emergency Overview
             </TabsTrigger>
             <TabsTrigger
+              value="live-incidents"
+              className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-700"
+            >
+              Live Incidents
+            </TabsTrigger>
+            <TabsTrigger
+              value="communications"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-700"
+            >
+              Communications
+            </TabsTrigger>
+            <TabsTrigger
               value="ai-coordination"
               className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-700"
             >
               AI Coordination
-            </TabsTrigger>
-            <TabsTrigger
-              value="starlink-integration"
-              className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-700"
-            >
-              Starlink Integration
-            </TabsTrigger>
-            <TabsTrigger
-              value="indigenous-protocols"
-              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-700"
-            >
-              Indigenous Protocols
-            </TabsTrigger>
-            <TabsTrigger
-              value="cross-jurisdictional"
-              className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-700"
-            >
-              Cross-Jurisdictional
             </TabsTrigger>
             <TabsTrigger
               value="patent-innovations"
@@ -186,81 +352,16 @@ export default function GovernmentDashboard() {
                     </div>
                   </div>
                 </div>
-
-                {/* Critical Emergency Incidents with AI Analysis */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-slate-800">🔥 AI-Analyzed Critical Incidents</h3>
-
-                  {/* Updated incident card backgrounds to complement blue-gray theme */}
-                  <div className="bg-red-500/20 border border-red-500/30 p-4 rounded backdrop-blur-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-red-700">WILDFIRE - North Shore Mountains</h4>
-                        <p className="text-sm text-red-600">
-                          Squamish Nation Territory - Cultural Protocols Auto-Activated
-                        </p>
-                        <div className="flex items-center space-x-4 mt-2 text-xs">
-                          <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded border border-red-500/30">
-                            AI Risk: CRITICAL
-                          </span>
-                          <span className="bg-blue-500/20 text-blue-700 px-2 py-1 rounded border border-blue-500/30">
-                            Starlink Priority: MAX
-                          </span>
-                          <span className="bg-purple-500/20 text-purple-700 px-2 py-1 rounded border border-purple-500/30">
-                            Cultural: COMPLIANT
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-red-600">12</div>
-                        <div className="text-xs text-red-700">Heroes Deployed</div>
-                        <div className="text-xs text-slate-600">AI-Selected</div>
-                      </div>
-                    </div>
-                    <div className="mt-3 bg-white/20 p-3 rounded border border-white/20">
-                      <div className="text-xs font-semibold text-slate-700">🤖 AI Analysis:</div>
-                      <div className="text-xs text-slate-700">
-                        Wind patterns suggest 73% probability of eastward spread. Recommended evacuation of 3 Indigenous
-                        communities within 2-hour window. Starlink bandwidth auto-allocated for emergency
-                        communications.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-orange-500/20 border border-orange-500/30 p-4 rounded backdrop-blur-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-orange-700">MEDICAL EMERGENCY - Downtown Vancouver</h4>
-                        <p className="text-sm text-orange-600">Multi-casualty incident - AI triage activated</p>
-                        <div className="flex items-center space-x-4 mt-2 text-xs">
-                          <span className="bg-orange-500/20 text-orange-700 px-2 py-1 rounded border border-orange-500/30">
-                            AI Risk: HIGH
-                          </span>
-                          <span className="bg-green-500/20 text-green-700 px-2 py-1 rounded border border-green-500/30">
-                            Hero ETA: 2.1 min
-                          </span>
-                          <span className="bg-blue-500/20 text-blue-700 px-2 py-1 rounded border border-blue-500/30">
-                            Satellite: OPTIMAL
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-orange-600">8</div>
-                        <div className="text-xs text-orange-700">Heroes En Route</div>
-                        <div className="text-xs text-slate-600">Skill-Matched</div>
-                      </div>
-                    </div>
-                    <div className="mt-3 bg-white/20 p-3 rounded border border-white/20">
-                      <div className="text-xs font-semibold text-slate-700">🤖 AI Triage Protocol:</div>
-                      <div className="text-xs text-slate-700">
-                        Deployed 3 medical specialists, 2 trauma responders, 3 support heroes. Predicted resource needs:
-                        2 ambulances, 1 helicopter. Hospital capacity confirmed via real-time integration.
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="live-incidents" className="space-y-6">
+            <LiveIncidentFeed />
+          </TabsContent>
+
+          <TabsContent value="communications" className="space-y-6">
+            <LiveCommunications />
           </TabsContent>
 
           <TabsContent value="ai-coordination" className="space-y-6">
@@ -340,141 +441,39 @@ export default function GovernmentDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="starlink-integration" className="space-y-6">
-            <Card className="bg-white/40 border-slate-300 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-slate-800">🛰️ Starlink Satellite Integration System</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gradient-to-r from-slate-200/80 to-blue-200/80 text-slate-800 p-6 rounded-lg backdrop-blur-sm border border-blue-500/30">
-                  <h3 className="text-lg font-bold mb-4">
-                    Patent Innovation: Emergency-Priority Satellite Network Management
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">4,847</div>
-                      <div className="text-sm text-slate-700">Active Satellites</div>
-                      <div className="text-xs text-slate-600">Real-time tracking</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">99.94%</div>
-                      <div className="text-sm text-slate-700">Network Uptime</div>
-                      <div className="text-xs text-slate-600">Emergency priority</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-600">2.1 Gbps</div>
-                      <div className="text-sm text-slate-700">Peak Bandwidth</div>
-                      <div className="text-xs text-slate-600">Emergency allocation</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-600">23ms</div>
-                      <div className="text-sm text-slate-700">Avg Latency</div>
-                      <div className="text-xs text-slate-600">Optimized routing</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="indigenous-protocols" className="space-y-6">
-            <Card className="bg-white/40 border-slate-300 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-slate-800">🏛️ Indigenous Cultural Protocol Integration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gradient-to-r from-purple-200/80 to-red-200/80 text-slate-800 p-6 rounded-lg backdrop-blur-sm border border-purple-500/30">
-                  <h3 className="text-lg font-bold mb-4">
-                    Patent Innovation: Automated Cultural Protocol Compliance System
-                  </h3>
-                  <p className="text-sm">
-                    First system to automatically activate Indigenous cultural protocols in emergency response with 100%
-                    compliance rate.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="cross-jurisdictional" className="space-y-6">
-            <Card className="bg-white/40 border-slate-300 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-slate-800">🌐 Cross-Jurisdictional Coordination System</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gradient-to-r from-green-200/80 to-blue-200/80 text-slate-800 p-6 rounded-lg backdrop-blur-sm border border-green-500/30">
-                  <h3 className="text-lg font-bold mb-4">
-                    Patent Innovation: Real-Time Multi-Agency Coordination Platform
-                  </h3>
-                  <p className="text-sm">
-                    Coordinating {realTimeData.cross_jurisdictional_coordination} agencies with 99.2% success rate and
-                    2.1s data sync time.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
+          {/* Patent Innovation Showcase section */}
           <TabsContent value="patent-innovations" className="space-y-6">
             <Card className="bg-white/40 border-slate-300 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-slate-800">🔬 Patent-Pending Innovations Summary</CardTitle>
+                <CardTitle className="text-slate-800 flex items-center gap-3">
+                  🔬 Live Patent Innovation Demonstration
+                  <Badge className="bg-yellow-500/20 text-yellow-700 border-yellow-500/30">REAL-TIME SHOWCASE</Badge>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-gradient-to-r from-yellow-200/80 to-orange-200/80 text-slate-800 p-6 rounded-lg backdrop-blur-sm border border-yellow-500/30">
-                  <h3 className="text-lg font-bold mb-4">
-                    🏆 Core Patent Claims - SafeRoute AI™ Emergency Response System
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Patent Status Overview */}
+                <div className="mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-4">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Patent Portfolio Status</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                      <h4 className="font-semibold mb-3">Primary Innovations:</h4>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start">
-                          <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 mt-2"></span>
-                          <strong>AI-Powered Multi-Modal Emergency Coordination:</strong> Sub-3-second decision engine
-                        </li>
-                        <li className="flex items-start">
-                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-2 mt-2"></span>
-                          <strong>Automated Cultural Protocol Integration:</strong> First Indigenous protocol system
-                        </li>
-                        <li className="flex items-start">
-                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2 mt-2"></span>
-                          <strong>Dynamic Satellite Bandwidth Allocation:</strong> Emergency-priority management
-                        </li>
-                        <li className="flex items-start">
-                          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2 mt-2"></span>
-                          <strong>Cross-Jurisdictional AI Coordination:</strong> Multi-agency optimization
-                        </li>
-                      </ul>
+                      <div className="text-2xl font-bold text-green-600">2</div>
+                      <div className="text-sm text-slate-700">Patents Filed</div>
+                      <div className="text-xs text-slate-600">CA 3280872, CA 3280894</div>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-3">IP Portfolio Value:</h4>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-green-600">$47M</div>
-                        <div className="text-sm text-slate-700">Estimated Total Value</div>
-                      </div>
-                      <div className="space-y-2 text-sm mt-4">
-                        <div className="flex justify-between">
-                          <span>Core AI System</span>
-                          <span className="font-semibold">$18M</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cultural Integration</span>
-                          <span className="font-semibold">$12M</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Satellite Integration</span>
-                          <span className="font-semibold">$9M</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Hero Mode™ Interface</span>
-                          <span className="font-semibold">$5M</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cross-Jurisdictional</span>
-                          <span className="font-semibold">$3M</span>
-                        </div>
-                      </div>
+                      <div className="text-2xl font-bold text-blue-600">12</div>
+                      <div className="text-sm text-slate-700">Core Innovations</div>
+                      <div className="text-xs text-slate-600">Patent-Protected</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-purple-600">$47M</div>
+                      <div className="text-sm text-slate-700">Portfolio Value</div>
+                      <div className="text-xs text-slate-600">Conservative Est.</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-orange-600">20</div>
+                      <div className="text-sm text-slate-700">Year Protection</div>
+                      <div className="text-xs text-slate-600">Patent Term</div>
                     </div>
                   </div>
                 </div>

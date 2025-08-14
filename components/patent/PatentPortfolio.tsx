@@ -7,28 +7,62 @@ const PatentPortfolio = () => {
   const containerRef = useRef(null)
 
   const patentData = {
-    1: { title: "SafeRoute AI™", icon: "🛡️", status: "filed", description: "Master Platform" },
-    2: { title: "SafeRoute OS™", icon: "⚙️", status: "filed", description: "Backend System" },
-    3: { title: "HERO™ CP", icon: "🚨", status: "filed", description: "Civilian Platform" },
-    4: { title: "HERO OS™", icon: "👨‍⚕️", status: "filed", description: "Responder Platform" },
-    5: { title: "RAPTRnav™", icon: "🛰️", status: "ready", description: "Evacuation Routing" },
-    6: { title: "ShareSafe™", icon: "🔒", status: "ready", description: "Encrypted Transfer" },
-    7: { title: "LOGIQ™", icon: "🧠", status: "ready", description: "Learning Engine" },
-    8: { title: "BodyGuard™", icon: "🚦", status: "ready", description: "Civic Alerts" },
-    9: { title: "SkyBridge™", icon: "📡", status: "ready", description: "Fallback Comms" },
-    10: { title: "Elder Portal", icon: "🌿", status: "ready", description: "Indigenous Interface" },
-    11: { title: "Governance", icon: "🏛️", status: "ready", description: "OCAP® Layer" },
-    12: { title: "DOROTHY™", icon: "🌡️", status: "ready", description: "Weather OS" },
-    13: { title: "VITALsync™", icon: "🏥", status: "supporting", description: "Hospital Sync" },
-    14: { title: "Mesh SDK", icon: "🔗", status: "supporting", description: "Hardware Kit" },
-    15: { title: "Wildfire", icon: "🔥", status: "supporting", description: "Early Warning" },
-    16: { title: "Flood Response", icon: "💧", status: "supporting", description: "Water Routing" },
-    17: { title: "Mass Casualty", icon: "🚑", status: "supporting", description: "Multi-Agency" },
-    18: { title: "NGO Portal", icon: "🤝", status: "supporting", description: "Aid Coordination" },
-    19: { title: "Rescue Ops", icon: "🔍", status: "supporting", description: "SAR Interface" },
-    20: { title: "Hospital Intake", icon: "🏨", status: "supporting", description: "Bed Matching" },
-    21: { title: "Fire & Rescue", icon: "🚒", status: "supporting", description: "Integration Layer" },
-    22: { title: "Gov Alert", icon: "📢", status: "supporting", description: "Emergency Comms" },
+    1: {
+      title: "SafeRoute AI™",
+      icon: "🛡️",
+      status: "filed",
+      description: "Master Platform",
+      patentNumber: "CA 3280872",
+      filingDate: "July 23, 2025",
+      keyInnovations: [
+        "Traditional Land Recognition Technology™ (TLRT™)",
+        "OCAP® Data Sovereignty Compliance",
+        "Hero Mode™ AI-Guided Emergency Response",
+        "Multi-language Indigenous Support",
+        "Sacred Site Protection Protocols",
+      ],
+    },
+    2: {
+      title: "SafeRoute OS™",
+      icon: "⚙️",
+      status: "filed",
+      description: "Backend System",
+      patentNumber: "CA 3280894",
+      filingDate: "July 23, 2025",
+      keyInnovations: [
+        "Three-Layer Emergency Response Architecture",
+        "AI Decision Engine with ML Models",
+        "Multi-Protocol Communication Bridge",
+        "Offline-First Architecture",
+        "Hierarchical Response Routing Algorithm",
+      ],
+    },
+    3: { title: "HERO™ CP", icon: "🚨", status: "filed", description: "Civilian Platform", keyInnovations: [] },
+    4: { title: "HERO OS™", icon: "👨‍⚕️", status: "filed", description: "Responder Platform", keyInnovations: [] },
+    5: { title: "RAPTRnav™", icon: "🛰️", status: "ready", description: "Evacuation Routing", keyInnovations: [] },
+    6: { title: "ShareSafe™", icon: "🔒", status: "ready", description: "Encrypted Transfer", keyInnovations: [] },
+    7: { title: "LOGIQ™", icon: "🧠", status: "ready", description: "Learning Engine", keyInnovations: [] },
+    8: { title: "BodyGuard™", icon: "🚦", status: "ready", description: "Civic Alerts", keyInnovations: [] },
+    9: { title: "SkyBridge™", icon: "📡", status: "ready", description: "Fallback Comms", keyInnovations: [] },
+    10: { title: "Elder Portal", icon: "🌿", status: "ready", description: "Indigenous Interface", keyInnovations: [] },
+    11: { title: "Governance", icon: "🏛️", status: "ready", description: "OCAP® Layer", keyInnovations: [] },
+    12: { title: "DOROTHY™", icon: "🌡️", status: "ready", description: "Weather OS", keyInnovations: [] },
+    13: { title: "VITALsync™", icon: "🏥", status: "supporting", description: "Hospital Sync", keyInnovations: [] },
+    14: { title: "Mesh SDK", icon: "🔗", status: "supporting", description: "Hardware Kit", keyInnovations: [] },
+    15: { title: "Wildfire", icon: "🔥", status: "supporting", description: "Early Warning", keyInnovations: [] },
+    16: { title: "Flood Response", icon: "💧", status: "supporting", description: "Water Routing", keyInnovations: [] },
+    17: { title: "Mass Casualty", icon: "🚑", status: "supporting", description: "Multi-Agency", keyInnovations: [] },
+    18: { title: "NGO Portal", icon: "🤝", status: "supporting", description: "Aid Coordination", keyInnovations: [] },
+    19: { title: "Rescue Ops", icon: "🔍", status: "supporting", description: "SAR Interface", keyInnovations: [] },
+    20: { title: "Hospital Intake", icon: "🏨", status: "supporting", description: "Bed Matching", keyInnovations: [] },
+    21: {
+      title: "Fire & Rescue",
+      icon: "🚒",
+      status: "supporting",
+      description: "Integration Layer",
+      keyInnovations: [],
+    },
+    22: { title: "Gov Alert", icon: "📢", status: "supporting", description: "Emergency Comms", keyInnovations: [] },
   }
 
   const getNodePosition = (index, total, radius) => {
@@ -221,7 +255,7 @@ const PatentPortfolio = () => {
           onClick={() => setSelectedPatent(null)}
         >
           <div
-            className="bg-white p-8 rounded-2xl max-w-[600px] w-[90%] relative shadow-2xl"
+            className="bg-white p-8 rounded-2xl max-w-[700px] w-[90%] relative shadow-2xl max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -236,6 +270,12 @@ const PatentPortfolio = () => {
               </div>
               <div className="flex-1">
                 <h2 className="text-[1.8em] font-bold text-gray-800 mb-1">{selectedPatent.title}</h2>
+                {selectedPatent.patentNumber && (
+                  <p className="text-sm text-gray-600 mb-2">Patent: {selectedPatent.patentNumber}</p>
+                )}
+                {selectedPatent.filingDate && (
+                  <p className="text-sm text-gray-600 mb-2">Filed: {selectedPatent.filingDate}</p>
+                )}
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white
                   ${
@@ -259,25 +299,42 @@ const PatentPortfolio = () => {
                 Description
               </h4>
               <p className="text-gray-600 mb-4">{selectedPatent.description}</p>
+
+              {selectedPatent.keyInnovations && (
+                <>
+                  <h4 className="text-[#667eea] text-lg font-semibold mt-5 mb-2 pb-1 border-b border-blue-200">
+                    Key Patent Innovations
+                  </h4>
+                  <ul className="space-y-2">
+                    {selectedPatent.keyInnovations.map((innovation, index) => (
+                      <li key={index} className="pl-6 relative text-gray-600">
+                        <span className="absolute left-0 text-[#667eea]">→</span>
+                        {innovation}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
               <h4 className="text-[#667eea] text-lg font-semibold mt-5 mb-2 pb-1 border-b border-blue-200">
-                Key Features
+                Technical Features
               </h4>
               <ul className="space-y-2">
                 <li className="pl-6 relative text-gray-600">
                   <span className="absolute left-0 text-[#667eea]">→</span>
-                  100% Offline Capable
+                  100% Offline Capable Operation
                 </li>
                 <li className="pl-6 relative text-gray-600">
                   <span className="absolute left-0 text-[#667eea]">→</span>
-                  Indigenous Data Sovereignty
+                  Indigenous Data Sovereignty (OCAP® Compliant)
                 </li>
                 <li className="pl-6 relative text-gray-600">
                   <span className="absolute left-0 text-[#667eea]">→</span>
-                  Multi-layer Fallback
+                  Multi-layer Communication Fallback
                 </li>
                 <li className="pl-6 relative text-gray-600">
                   <span className="absolute left-0 text-[#667eea]">→</span>
-                  AI-Guided Response
+                  AI-Guided Emergency Response
                 </li>
               </ul>
             </div>
