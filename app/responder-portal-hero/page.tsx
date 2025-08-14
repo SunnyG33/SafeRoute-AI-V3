@@ -31,6 +31,7 @@ import {
   Wind,
   Thermometer,
   Building2,
+  ArrowLeftRight,
 } from "lucide-react"
 
 export default function ResponderPortalHero() {
@@ -339,6 +340,91 @@ export default function ResponderPortalHero() {
                 </Badge>
               </div>
             </div>
+          </div>
+
+          {/* Tri-Level Communication Status */}
+          <div className="mb-8">
+            <Card className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-blue-500/30 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <Radio className="w-6 h-6 text-blue-400" />
+                  <span>Tri-Level Communication Hub</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button>
+                        <Info className="w-4 h-4 text-gray-400 hover:text-white transition-colors" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md bg-slate-800 border-slate-600 text-white z-[60]">
+                      <p>
+                        <strong>Tri-Level Communications:</strong> Bi-directional communication between Scene (HERO
+                        CP™), Field Responders (HERO OS™), and Command Centers/Hospitals. Real-time data sharing, voice
+                        coordination, and seamless handoffs across all emergency response levels.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Scene Connection */}
+                  <div className="flex flex-col items-center p-4 bg-slate-800/50 rounded-lg border border-green-500/30">
+                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-3">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white font-semibold mb-2">Connected to Scene</h3>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-green-400 text-sm">HERO CP™ Active</span>
+                    </div>
+                    <p className="text-gray-300 text-xs text-center">
+                      Live bi-directional communication with civilians on scene via HERO CP™ portal
+                    </p>
+                  </div>
+
+                  {/* Responder Hub */}
+                  <div className="flex flex-col items-center p-4 bg-slate-800/50 rounded-lg border border-blue-500/30">
+                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mb-3">
+                      <Shield className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white font-semibold mb-2">Field Responders</h3>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <span className="text-blue-400 text-sm">HERO OS™ Active</span>
+                    </div>
+                    <p className="text-gray-300 text-xs text-center">
+                      Coordinating EMS, Fire, Police units with real-time status and resource allocation
+                    </p>
+                  </div>
+
+                  {/* Dispatch/Hospital Connection */}
+                  <div className="flex flex-col items-center p-4 bg-slate-800/50 rounded-lg border border-purple-500/30">
+                    <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mb-3">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white font-semibold mb-2">Connected to Dispatch</h3>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                      <span className="text-purple-400 text-sm">VITALsync™ Active</span>
+                    </div>
+                    <p className="text-gray-300 text-xs text-center">
+                      Real-time coordination with command centers, hospitals, and emergency management
+                    </p>
+                  </div>
+                </div>
+
+                {/* Communication Flow Visualization */}
+                <div className="mt-6 flex items-center justify-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-400 text-sm">Scene</span>
+                    <ArrowLeftRight className="w-4 h-4 text-gray-400" />
+                    <span className="text-blue-400 text-sm">Responder</span>
+                    <ArrowLeftRight className="w-4 h-4 text-gray-400" />
+                    <span className="text-purple-400 text-sm">Command</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Weather Integration Banner */}

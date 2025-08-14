@@ -17,24 +17,101 @@ import {
   Star,
   ChevronDown,
   Navigation,
+  FileText,
+  PresentationIcon as PresentationChart,
+  DollarSign,
+  Target,
+  Lightbulb,
+  TrendingUp,
+  Users2,
+  Award,
+  Rocket,
+  BarChart3,
+  Globe,
+  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const navigationRoutes = [
-  { path: "/landing", name: "Home", icon: Home, color: "from-blue-500 to-cyan-400" },
-  { path: "/portal-hub", name: "Portal Hub", icon: Navigation, color: "from-purple-500 to-indigo-500" },
-  { path: "/civilian-portal-hero", name: "Civilian Portal", icon: Heart, color: "from-red-500 to-pink-400" },
-  { path: "/responder-portal-hero", name: "Responder Portal", icon: Shield, color: "from-blue-600 to-purple-500" },
-  { path: "/elder-portal", name: "Elder Portal", icon: Crown, color: "from-amber-500 to-orange-400" },
-  { path: "/community-portal", name: "Community Portal", icon: Users, color: "from-green-500 to-teal-400" },
+const navigationSections = [
   {
-    path: "/government-dashboard",
-    name: "Government Dashboard",
-    icon: Building2,
-    color: "from-indigo-500 to-blue-500",
+    title: "Live Platform Demo",
+    routes: [
+      { path: "/landing", name: "SafeRoute AI Home", icon: Home, color: "from-blue-500 to-cyan-400" },
+      { path: "/portal-hub", name: "Portal Command Center", icon: Navigation, color: "from-purple-500 to-indigo-500" },
+      {
+        path: "/civilian-portal-hero",
+        name: "HERO CP™ - Civilian Portal",
+        icon: Heart,
+        color: "from-red-500 to-pink-400",
+      },
+      {
+        path: "/responder-portal-hero",
+        name: "HERO OS™ - Responder Portal",
+        icon: Shield,
+        color: "from-blue-600 to-purple-500",
+      },
+      { path: "/elder-portal", name: "Indigenous Elder Portal", icon: Crown, color: "from-amber-500 to-orange-400" },
+      { path: "/community-portal", name: "Community Coordination", icon: Users, color: "from-green-500 to-teal-400" },
+      {
+        path: "/government-dashboard",
+        name: "Government Operations",
+        icon: Building2,
+        color: "from-indigo-500 to-blue-500",
+      },
+      { path: "/patent-wheel", name: "Patent Portfolio Wheel", icon: Star, color: "from-purple-500 to-pink-500" },
+    ],
   },
-  { path: "/patent-wheel", name: "Patent Wheel", icon: Star, color: "from-purple-500 to-pink-500" },
+  {
+    title: "Business Plan & Strategy",
+    routes: [
+      { path: "/business-plan", name: "68-Page Business Plan", icon: FileText, color: "from-emerald-500 to-teal-500" },
+      { path: "/executive-summary", name: "Executive Summary", icon: Target, color: "from-blue-500 to-indigo-500" },
+      { path: "/market-analysis", name: "Market Analysis", icon: TrendingUp, color: "from-green-500 to-emerald-500" },
+      {
+        path: "/competitive-landscape",
+        name: "Competitive Analysis",
+        icon: Users2,
+        color: "from-orange-500 to-red-500",
+      },
+    ],
+  },
+  {
+    title: "Investor Materials",
+    routes: [
+      {
+        path: "/pitch-deck",
+        name: "Investor Pitch Deck",
+        icon: PresentationChart,
+        color: "from-violet-500 to-purple-500",
+      },
+      { path: "/financials", name: "Financial Projections", icon: DollarSign, color: "from-green-600 to-emerald-600" },
+      { path: "/funding-requirements", name: "Funding Requirements", icon: Rocket, color: "from-blue-600 to-cyan-500" },
+      {
+        path: "/roi-analysis",
+        name: "ROI & Market Opportunity",
+        icon: BarChart3,
+        color: "from-yellow-500 to-orange-500",
+      },
+    ],
+  },
+  {
+    title: "Technology & Innovation",
+    routes: [
+      { path: "/technology-overview", name: "Technology Stack", icon: Zap, color: "from-cyan-500 to-blue-500" },
+      { path: "/patent-portfolio", name: "Patent Strategy", icon: Award, color: "from-purple-600 to-pink-500" },
+      {
+        path: "/innovation-showcase",
+        name: "Innovation Showcase",
+        icon: Lightbulb,
+        color: "from-yellow-500 to-amber-500",
+      },
+      { path: "/global-expansion", name: "Global Expansion Plan", icon: Globe, color: "from-teal-500 to-green-500" },
+    ],
+  },
 ]
+
+// Flatten all routes for navigation logic
+const allRoutes = navigationSections.flatMap((section) => section.routes)
 
 interface UniversalNavigationProps {
   showBackButton?: boolean
@@ -45,16 +122,16 @@ interface UniversalNavigationProps {
 
 export default function UniversalNavigation({
   showBackButton = true,
-  showNextPrevious = false,
+  showNextPrevious = true,
   customBackPath,
   customBackLabel = "Back",
 }: UniversalNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
-  const currentRouteIndex = navigationRoutes.findIndex((route) => route.path === pathname)
-  const previousRoute = currentRouteIndex > 0 ? navigationRoutes[currentRouteIndex - 1] : null
-  const nextRoute = currentRouteIndex < navigationRoutes.length - 1 ? navigationRoutes[currentRouteIndex + 1] : null
+  const currentRouteIndex = allRoutes.findIndex((route) => route.path === pathname)
+  const previousRoute = currentRouteIndex > 0 ? allRoutes[currentRouteIndex - 1] : null
+  const nextRoute = currentRouteIndex < allRoutes.length - 1 ? allRoutes[currentRouteIndex + 1] : null
 
   return (
     <>
@@ -99,10 +176,10 @@ export default function UniversalNavigation({
 
             {/* Center - Current Page Indicator */}
             <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
-              {navigationRoutes.find((route) => route.path === pathname) && (
+              {allRoutes.find((route) => route.path === pathname) && (
                 <>
                   {(() => {
-                    const currentRoute = navigationRoutes.find((route) => route.path === pathname)!
+                    const currentRoute = allRoutes.find((route) => route.path === pathname)!
                     const Icon = currentRoute.icon
                     return (
                       <>
@@ -156,43 +233,61 @@ export default function UniversalNavigation({
               >
                 {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
                 <ChevronDown className={`w-3 h-3 ml-1 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                <span className="ml-2 text-xs">Presentation Menu</span>
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Dropdown Menu */}
+        {/* Comprehensive Dropdown Menu */}
         {isOpen && (
-          <div className="bg-black/40 backdrop-blur-md border-t border-white/10">
+          <div className="bg-black/40 backdrop-blur-md border-t border-white/10 max-h-[80vh] overflow-y-auto">
             <div className="container mx-auto px-4 py-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {navigationRoutes.map((route) => {
-                  const Icon = route.icon
-                  const isActive = pathname === route.path
+              {navigationSections.map((section, sectionIndex) => (
+                <div key={section.title} className="mb-6">
+                  <h3 className="text-cyan-300 font-semibold text-sm mb-3 px-2 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    {section.title}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {section.routes.map((route) => {
+                      const Icon = route.icon
+                      const isActive = pathname === route.path
 
-                  return (
-                    <Link
-                      key={route.path}
-                      href={route.path}
-                      onClick={() => setIsOpen(false)}
-                      className={`
-                        flex items-center gap-3 p-3 rounded-lg transition-all duration-200
-                        ${
-                          isActive
-                            ? "bg-gradient-to-r from-cyan-500/20 to-teal-500/20 border border-cyan-400/30"
-                            : "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20"
-                        }
-                      `}
-                    >
-                      <div className={`p-2 rounded-lg bg-gradient-to-r ${route.color}`}>
-                        <Icon className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-white text-sm font-medium truncate">{route.name}</div>
-                      </div>
-                    </Link>
-                  )
-                })}
+                      return (
+                        <Link
+                          key={route.path}
+                          href={route.path}
+                          onClick={() => setIsOpen(false)}
+                          className={`
+                            flex items-center gap-3 p-3 rounded-lg transition-all duration-200
+                            ${
+                              isActive
+                                ? "bg-gradient-to-r from-cyan-500/20 to-teal-500/20 border border-cyan-400/30 scale-105"
+                                : "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 hover:scale-102"
+                            }
+                          `}
+                        >
+                          <div className={`p-2 rounded-lg bg-gradient-to-r ${route.color} flex-shrink-0`}>
+                            <Icon className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-sm font-medium truncate">{route.name}</div>
+                          </div>
+                          {isActive && <div className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></div>}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Presentation Controls */}
+              <div className="mt-6 pt-4 border-t border-white/10">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>SafeRoute AI™ Comprehensive Presentation System</span>
+                  <span>{allRoutes.length} Total Sections</span>
+                </div>
               </div>
             </div>
           </div>
