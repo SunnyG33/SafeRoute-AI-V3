@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import HeroModeRedesigned from "@/components/emergency/HeroModeRedesigned"
 import Link from "next/link"
+import UniversalNavigation from "@/components/navigation/UniversalNavigation"
 import {
   Shield,
   Satellite,
@@ -57,6 +58,7 @@ export default function SafeRouteAILanding() {
 
   return (
     <div className="min-h-screen bg-slate-900 relative overflow-hidden">
+      <UniversalNavigation showBackButton={false} showNextPrevious={true} />
       {/* Hero Mode Overlay */}
       {showHeroMode && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black">

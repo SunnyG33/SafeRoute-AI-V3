@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Users, Shield, Building2, Heart, Home, ArrowRight, Activity, Globe, Zap } from "lucide-react"
+import UniversalNavigation from "@/components/navigation/UniversalNavigation"
 
 const portals = [
   {
@@ -81,6 +82,12 @@ export default function PortalHub() {
       className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black"
       style={{ backgroundColor: "#0a0a0a" }}
     >
+      <UniversalNavigation
+        showBackButton={true}
+        customBackPath="/landing"
+        customBackLabel="Home"
+        showNextPrevious={true}
+      />
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-teal-500/5 to-transparent" />
