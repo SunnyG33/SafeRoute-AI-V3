@@ -768,13 +768,6 @@ export default function BusinessPlanPage() {
             <FileText className="w-5 h-5 mr-2" />
             View Interactive Version
           </Button>
-          <Button
-            className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-8 py-3"
-            onClick={() => (window.location.href = "/dev-progress")}
-          >
-            <BarChart3 className="w-5 h-5 mr-2" />
-            Development Progress
-          </Button>
           <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-3 bg-transparent">
             Schedule Presentation
           </Button>

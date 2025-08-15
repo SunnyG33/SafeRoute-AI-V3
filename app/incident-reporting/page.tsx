@@ -1,8 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { useRealTimeIncidents } from "@/hooks/useRealTimeIncidents"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -32,6 +30,45 @@ const reportTypes = [
   { id: "weather", label: "Weather Update", icon: Wind, points: 30, color: "bg-blue-600" },
 ]
 
+const recentReports = [
+  {
+    id: 1,
+    type: "smoke",
+    location: "Highway 1, Mile 23",
+    reporter: "Sarah M.",
+    time: "2 min ago",
+    verified: true,
+    points: 50,
+  },
+  {
+    id: 2,
+    type: "fire",
+    location: "Pine Ridge Trail",
+    reporter: "Mike T.",
+    time: "8 min ago",
+    verified: true,
+    points: 100,
+  },
+  {
+    id: 3,
+    type: "evacuation",
+    location: "Cedar Valley Rd",
+    reporter: "Lisa K.",
+    time: "15 min ago",
+    verified: false,
+    points: 75,
+  },
+  {
+    id: 4,
+    type: "safe-zone",
+    location: "Community Center",
+    reporter: "David R.",
+    time: "23 min ago",
+    verified: true,
+    points: 40,
+  },
+]
+
 const topReporters = [
   { name: "Sarah Mitchell", points: 2850, reports: 47, badges: 8, avatar: "👩‍🚒" },
   { name: "Mike Thompson", points: 2340, reports: 39, badges: 6, avatar: "👨‍🌾" },
@@ -47,87 +84,9 @@ const achievements = [
 ]
 
 export default function IncidentReporting() {
-  const supabase = createClient()
-  const { incidents } = useRealTimeIncidents()
   const [selectedReport, setSelectedReport] = useState("")
-  const [description, setDescription] = useState("")
   const [userPoints, setUserPoints] = useState(1240)
   const [userReports, setUserReports] = useState(18)
-  const [user, setUser] = useState<any>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-
-    // Get user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          })
-        },
-        (error) => {
-          console.error("Error getting location:", error)
-        },
-      )
-    }
-  }, [supabase.auth])
-
-  const handleSubmitReport = async () => {
-    if (!selectedReport || !description.trim() || !user) {
-      alert("Please select a report type and add a description")
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      const selectedType = reportTypes.find((t) => t.id === selectedReport)
-
-      const response = await fetch("/api/incidents", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: selectedType?.label || "Community Report",
-          description: description,
-          location: location ? `${location.lat}, ${location.lng}` : "Location not available",
-          incident_type: selectedReport,
-          priority: selectedReport === "fire" ? "critical" : selectedReport === "smoke" ? "high" : "medium",
-          status: "active",
-          reported_by: user.id,
-        }),
-      })
-
-      if (response.ok) {
-        // Award points to user
-        setUserPoints((prev) => prev + (selectedType?.points || 0))
-        setUserReports((prev) => prev + 1)
-
-        // Reset form
-        setSelectedReport("")
-        setDescription("")
-
-        alert(`Report submitted successfully! You earned ${selectedType?.points || 0} hero points.`)
-      } else {
-        throw new Error("Failed to submit report")
-      }
-    } catch (error) {
-      console.error("Error submitting report:", error)
-      alert("Failed to submit report. Please try again.")
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
@@ -177,13 +136,9 @@ export default function IncidentReporting() {
                 <Trophy className="w-4 h-4 mr-2" />
                 View Hero Profile
               </Button>
-              <Button
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                onClick={handleSubmitReport}
-                disabled={!selectedReport || !description.trim() || submitting}
-              >
+              <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600">
                 <Camera className="w-4 h-4 mr-2" />
-                {submitting ? "Submitting..." : "Quick Report"}
+                Quick Report
               </Button>
             </div>
           </div>
@@ -256,24 +211,14 @@ export default function IncidentReporting() {
                   <div>
                     <label className="block text-sm font-medium text-blue-300 mb-2">Current Location</label>
                     <div className="p-3 bg-white/5 rounded-lg border border-white/20">
-                      {location ? (
-                        <>
-                          <div className="text-white">📍 Current GPS Location</div>
-                          <div className="text-sm text-blue-300">
-                            GPS: {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° W
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-blue-300">Getting location...</div>
-                      )}
+                      <div className="text-white">📍 Highway 97, Mile Marker 45</div>
+                      <div className="text-sm text-blue-300">GPS: 49.2827° N, 123.1207° W</div>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-blue-300 mb-2">Description</label>
                     <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
                       className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-blue-300"
                       placeholder="Describe what you're seeing..."
                       rows={3}
@@ -285,75 +230,52 @@ export default function IncidentReporting() {
                       <Camera className="w-4 h-4 mr-2" />
                       Add Photo/Video
                     </Button>
-                    <Button
-                      onClick={handleSubmitReport}
-                      disabled={!selectedReport || !description.trim() || submitting}
-                      className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-50"
-                    >
-                      {submitting ? "Submitting..." : "Submit Report"}
-                    </Button>
+                    <Button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white">Submit Report</Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Live Community Reports - Now showing real data */}
+            {/* Recent Reports */}
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Zap className="w-5 h-5" />
                   Live Community Reports
-                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                    {incidents.length} Active
-                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {incidents.length === 0 ? (
-                    <div className="text-center py-8 text-blue-300">
-                      No active incidents reported. Be the first to help your community!
-                    </div>
-                  ) : (
-                    incidents.slice(0, 5).map((incident) => {
-                      const reportType = reportTypes.find((t) => t.id === incident.incident_type) || reportTypes[0]
-                      const Icon = reportType.icon
-                      return (
-                        <div
-                          key={incident.id}
-                          className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${reportType.color}`}>
-                              <Icon className="w-4 h-4 text-white" />
-                            </div>
-                            <div>
-                              <div className="text-white font-medium">{incident.location}</div>
-                              <div className="text-sm text-blue-300">
-                                {incident.title} • {new Date(incident.created_at).toLocaleTimeString()}
-                              </div>
-                            </div>
+                  {recentReports.map((report) => {
+                    const reportType = reportTypes.find((t) => t.id === report.type)
+                    const Icon = reportType?.icon || AlertTriangle
+                    return (
+                      <div
+                        key={report.id}
+                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${reportType?.color || "bg-gray-600"}`}>
+                            <Icon className="w-4 h-4 text-white" />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              className={
-                                incident.status === "critical"
-                                  ? "bg-red-500/20 text-red-300 border-red-500/30"
-                                  : incident.status === "active"
-                                    ? "bg-green-500/20 text-green-300 border-green-500/30"
-                                    : "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                              }
-                            >
-                              {incident.status}
-                            </Badge>
-                            <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                              +{reportType.points}
-                            </Badge>
+                          <div>
+                            <div className="text-white font-medium">{report.location}</div>
+                            <div className="text-sm text-blue-300">
+                              by {report.reporter} • {report.time}
+                            </div>
                           </div>
                         </div>
-                      )
-                    })
-                  )}
+                        <div className="flex items-center gap-2">
+                          {report.verified && (
+                            <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Verified</Badge>
+                          )}
+                          <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                            +{report.points}
+                          </Badge>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>

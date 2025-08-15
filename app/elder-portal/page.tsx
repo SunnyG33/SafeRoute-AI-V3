@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -10,9 +9,6 @@ import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import FloatingEmergencyButtons from "@/components/emergency/FloatingEmergencyButtons"
 import UniversalNavigation from "@/components/navigation/UniversalNavigation"
-import { LiveIncidentFeed } from "@/components/realtime/LiveIncidentFeed"
-import { LiveCommunications } from "@/components/realtime/LiveCommunications"
-import { createClient } from "@/lib/supabase/client"
 import {
   AlertTriangle,
   Users,
@@ -36,16 +32,6 @@ import {
   Database,
   Zap,
 } from "lucide-react"
-
-interface User {
-  id: string
-  email: string
-  role: string
-  first_name: string
-  last_name: string
-  traditional_territory?: string
-  nation_affiliation?: string
-}
 
 interface EmergencyIncident {
   id: string
@@ -86,79 +72,53 @@ interface CulturalProtocol {
 }
 
 export default function ElderPortal() {
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [activeIncidents, setActiveIncidents] = useState<EmergencyIncident[]>([])
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient()
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (!session) {
-        router.push("/auth/login")
-        return
-      }
-
-      // Check if user has elder role
-      const { data: profile } = await supabase.from("users").select("*").eq("id", session.user.id).single()
-
-      if (!profile || profile.role !== "elder") {
-        router.push("/dashboard")
-        return
-      }
-
-      setUser(profile)
-      setLoading(false)
-    }
-
-    checkAuth()
-  }, [router])
-
-  useEffect(() => {
-    if (!user) return
-
-    const supabase = createClient()
-
-    const fetchIncidents = async () => {
-      const { data: incidents } = await supabase.from("incidents").select("*").order("created_at", { ascending: false })
-
-      if (incidents) {
-        const mappedIncidents: EmergencyIncident[] = incidents.map((incident) => ({
-          id: incident.id,
-          type: incident.type || "community",
-          location: incident.location || "Unknown Location",
-          status: incident.status || "active",
-          priority: incident.priority || "medium",
-          timestamp: new Date(incident.created_at).toLocaleString(),
-          description: incident.description || "Emergency incident",
-          assignedHeroes: incident.assigned_heroes || [],
-          culturalProtocols: incident.cultural_protocols || [],
-          elderApproval: incident.elder_approval || "pending",
-          traditionalTerritory: incident.traditional_territory,
-          sacredSiteProximity: incident.sacred_site_proximity,
-          tlrtActive: true,
-        }))
-        setActiveIncidents(mappedIncidents)
-      }
-    }
-
-    fetchIncidents()
-
-    // Set up real-time subscriptions
-    const incidentsSubscription = supabase
-      .channel("elder-incidents")
-      .on("postgres_changes", { event: "*", schema: "public", table: "incidents" }, () => fetchIncidents())
-      .subscribe()
-
-    return () => {
-      incidentsSubscription.unsubscribe()
-    }
-  }, [user])
+  const [activeIncidents, setActiveIncidents] = useState<EmergencyIncident[]>([
+    {
+      id: "1",
+      type: "medical",
+      location: "Traditional Territory - Sector 7",
+      status: "active",
+      priority: "critical",
+      timestamp: "2024-01-18 14:30",
+      description: "Elder requires immediate medical assistance",
+      assignedHeroes: ["Sarah M.", "Tom K."],
+      culturalProtocols: ["Elder respect protocols", "Traditional medicine consultation"],
+      elderApproval: "approved",
+      traditionalTerritory: "Squamish Nation Territory",
+      sacredSiteProximity: 0.3,
+      tlrtActive: true,
+    },
+    {
+      id: "2",
+      type: "search-rescue",
+      location: "Sacred Site - Grid B4",
+      status: "responding",
+      priority: "high",
+      timestamp: "2024-01-18 13:15",
+      description: "Missing hiker near ceremonial grounds",
+      assignedHeroes: ["Mike R.", "Lisa P.", "David C."],
+      culturalProtocols: ["Sacred site protocols", "Traditional territory acknowledgment"],
+      elderApproval: "pending",
+      traditionalTerritory: "Tsleil-Waututh Nation Territory",
+      sacredSiteProximity: 0.1,
+      tlrtActive: true,
+    },
+    {
+      id: "3",
+      type: "community",
+      location: "Community Center - Main Reserve",
+      status: "resolved",
+      priority: "medium",
+      timestamp: "2024-01-18 11:45",
+      description: "Community gathering emergency preparedness",
+      assignedHeroes: ["Anna T.", "Robert S."],
+      culturalProtocols: ["Community consultation", "Traditional governance"],
+      elderApproval: "approved",
+      traditionalTerritory: "Musqueam Nation Territory",
+      sacredSiteProximity: 2.1,
+      tlrtActive: true,
+    },
+  ])
 
   const [heroVolunteers, setHeroVolunteers] = useState<HeroVolunteer[]>([
     {
@@ -330,19 +290,6 @@ export default function ElderPortal() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-            <Crown className="w-10 h-10 text-white" />
-          </div>
-          <p className="text-amber-800">Loading Elder Council Portal...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
       <UniversalNavigation
@@ -394,9 +341,6 @@ export default function ElderPortal() {
                     {starlinkStatus.signalStrength}%
                   </Badge>
                 </div>
-                <span className="text-white">
-                  👤 Elder {user?.first_name} {user?.last_name}
-                </span>
                 <Button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg">
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   Emergency Override
@@ -441,20 +385,6 @@ export default function ElderPortal() {
                 <AlertTriangle className="w-4 h-4 mr-2" />
                 Active Incidents
               </TabsTrigger>
-              <TabsTrigger
-                value="live-feed"
-                className="data-[state=active]:bg-orange-100 data-[state=active]:text-orange-800"
-              >
-                <Radio className="w-4 h-4 mr-2" />
-                Live Feed
-              </TabsTrigger>
-              <TabsTrigger
-                value="communications"
-                className="data-[state=active]:bg-purple-100 data-[state=active]:text-purple-800"
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Communications
-              </TabsTrigger>
               <TabsTrigger value="heroes" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800">
                 <Users className="w-4 h-4 mr-2" />
                 Hero Volunteers
@@ -472,6 +402,20 @@ export default function ElderPortal() {
               >
                 <Crown className="w-4 h-4 mr-2" />
                 Governance
+              </TabsTrigger>
+              <TabsTrigger
+                value="community"
+                className="data-[state=active]:bg-green-100 data-[state=active]:text-green-800"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Community Status
+              </TabsTrigger>
+              <TabsTrigger
+                value="patent-innovations"
+                className="data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-800"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Patent Innovations
               </TabsTrigger>
             </TabsList>
 
@@ -492,7 +436,7 @@ export default function ElderPortal() {
                           <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
                             {incident.status.toUpperCase()}
                           </Badge>
-                          <Badge className={getApprovalColor(incident.elderApproval)}>
+                          <Badge className="bg-green-100 text-green-800 border-green-200">
                             Elder: {incident.elderApproval?.toUpperCase() || "PENDING"}
                           </Badge>
                           {incident.tlrtActive && (
@@ -597,14 +541,6 @@ export default function ElderPortal() {
                   </Card>
                 ))}
               </div>
-            </TabsContent>
-
-            <TabsContent value="live-feed" className="space-y-6">
-              <LiveIncidentFeed />
-            </TabsContent>
-
-            <TabsContent value="communications" className="space-y-6">
-              <LiveCommunications />
             </TabsContent>
 
             {/* Hero Volunteers Tab */}

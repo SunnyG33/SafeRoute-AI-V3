@@ -2,12 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
-import { useRealTimeIncidents } from "@/hooks/useRealTimeIncidents"
-import { LiveIncidentFeed } from "@/components/realtime/LiveIncidentFeed"
-import { LiveCommunications } from "@/components/realtime/LiveCommunications"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -53,11 +48,6 @@ import {
 import Link from "next/link"
 
 export default function CivilianPortalHero() {
-  const router = useRouter()
-  const supabase = createClient()
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const { incidents } = useRealTimeIncidents()
   const [heroMode, setHeroMode] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [responseTime, setResponseTime] = useState(0)
@@ -77,22 +67,6 @@ export default function CivilianPortalHero() {
   const [textSize, setTextSize] = useState<"normal" | "large" | "jumbo">("normal")
   const [highContrastMode, setHighContrastMode] = useState(false)
   const [voiceSpeed, setVoiceSpeed] = useState<"slow" | "normal" | "fast">("normal")
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) {
-        router.push("/auth/login")
-        return
-      }
-      setUser(user)
-      setLoading(false)
-    }
-
-    checkAuth()
-  }, [router, supabase.auth])
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout
@@ -182,32 +156,6 @@ export default function CivilianPortalHero() {
     { title: "Guidance Active", description: "Evidence-based protocols", icon: Database },
     { title: "Help En Route", description: "ETA: 4 minutes", icon: Users },
   ]
-
-  const handleReportIncident = async (incidentData: any) => {
-    try {
-      const response = await fetch("/api/incidents", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: incidentData.title,
-          description: incidentData.description,
-          location: incidentData.location,
-          incident_type: incidentData.type,
-          priority: incidentData.priority,
-          status: "active",
-        }),
-      })
-
-      if (response.ok) {
-        // Show success message
-        console.log("Incident reported successfully")
-      }
-    } catch (error) {
-      console.error("Error reporting incident:", error)
-    }
-  }
 
   const handleCallForHelp = useCallback((e?: React.MouseEvent) => {
     try {
@@ -408,14 +356,6 @@ export default function CivilianPortalHero() {
   const handleResetCompression = () => {
     setCompressionCount(0)
     setVisualMetronome(false)
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-400"></div>
-      </div>
-    )
   }
 
   if (heroMode) {
@@ -1011,583 +951,560 @@ export default function CivilianPortalHero() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <>
       <TooltipProvider delayDuration={300}>
-        <UniversalNavigation />
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+          <UniversalNavigation />
 
-        {/* Header with Voice Controls and Hero Profile Access */}
-        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-blue-500/30 backdrop-blur-sm mb-6 p-4 rounded-xl">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-white mb-2">Voice Automation & Accessibility</h2>
-              <p className="text-blue-200 text-sm">
-                Fully voice automated • Designed for panic situations • JUMBO text for elders
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/hero-profile">
-                <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold">
-                  <Award className="w-4 h-4 mr-2" />
-                  My Hero Profile
-                </Button>
-              </Link>
-
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30"
-                >
-                  Voice: ON
-                </Button>
-                <Button
-                  size="sm"
-                  className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30"
-                >
-                  JUMBO Text
-                </Button>
-                <Button
-                  size="sm"
-                  className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30"
-                >
-                  High Contrast
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border-b border-emerald-500/30">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              {/* Voice Automation Status */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-3 h-3 rounded-full ${isVoiceActive ? "bg-green-500 animate-pulse" : "bg-gray-500"}`}
-                  />
-                  <span
-                    className={`font-semibold ${textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"} text-emerald-300`}
-                  >
-                    VOICE AUTOMATED
-                  </span>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button>
-                        <Info className="w-4 h-4 text-gray-400 hover:text-emerald-400 transition-colors" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
-                      <p>
-                        <strong>Full Voice Automation:</strong> Every feature is voice-controlled and designed for
-                        panic/high-stress situations. Hands-free operation with voice commands in 100+ languages. Say
-                        "HERO HELP" to activate emergency mode.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-orange-400" />
-                  <span
-                    className={`font-semibold ${textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"} text-orange-300`}
-                  >
-                    PANIC MODE READY
-                  </span>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button>
-                        <Info className="w-4 h-4 text-gray-400 hover:text-orange-400 transition-colors" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
-                      <p>
-                        <strong>High-Stress Design:</strong> Interface optimized for panic situations with large
-                        buttons, clear voice prompts, simplified navigation, and automatic emergency detection. System
-                        adapts to stress levels and provides calming guidance.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-
-              {/* Accessibility Controls */}
-              <div className="flex items-center gap-3">
-                {/* Text Size Control */}
-                <div className="flex items-center gap-2">
-                  <Type className="w-4 h-4 text-blue-400" />
-                  <select
-                    value={textSize}
-                    onChange={(e) => setTextSize(e.target.value as "normal" | "large" | "jumbo")}
-                    className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm"
-                  >
-                    <option value="normal">Normal Text</option>
-                    <option value="large">Large Text</option>
-                    <option value="jumbo">JUMBO Text</option>
-                  </select>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button>
-                        <Info className="w-4 h-4 text-gray-400 hover:text-blue-400 transition-colors" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-slate-800 border-slate-600 text-white z-[60]">
-                      <p>
-                        <strong>JUMBO Text Mode:</strong> Extra-large text designed for elders and users with sight
-                        challenges. Includes high contrast and simplified layouts for maximum accessibility.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                {/* Voice Speed Control */}
-                <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-purple-400" />
-                  <select
-                    value={voiceSpeed}
-                    onChange={(e) => setVoiceSpeed(e.target.value as "slow" | "normal" | "fast")}
-                    className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm"
-                  >
-                    <option value="slow">Slow Voice</option>
-                    <option value="normal">Normal Voice</option>
-                    <option value="fast">Fast Voice</option>
-                  </select>
-                </div>
-
-                {/* High Contrast Toggle */}
-                <button
-                  onClick={() => setHighContrastMode(!highContrastMode)}
-                  className={`flex items-center gap-2 px-3 py-1 rounded border transition-colors ${
-                    highContrastMode
-                      ? "bg-yellow-500 border-yellow-400 text-black"
-                      : "bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
-                  }`}
-                >
-                  <Eye className="w-4 h-4" />
-                  <span className="text-sm font-medium">High Contrast</span>
-                </button>
-
-                {/* Universal Access Badge */}
-                <Badge variant="outline" className="border-green-500 text-green-400">
-                  <Users className="w-3 h-3 mr-1" />
-                  Universal Access
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content with Dynamic Text Sizing */}
-        {incidents.length > 0 && (
-          <div className="fixed top-20 right-4 w-80 z-50">
-            <LiveIncidentFeed />
-          </div>
-        )}
-        <div
-          className={`container mx-auto px-4 py-8 ${textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-base"}`}
-        >
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-teal-500">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h1
-                className={`font-bold bg-gradient-to-r from-white via-blue-200 to-teal-200 bg-clip-text text-transparent ${
-                  textSize === "jumbo" ? "text-6xl" : textSize === "large" ? "text-5xl" : "text-4xl"
-                }`}
-              >
-                SafeRoute AI™ • HERO CP™
-              </h1>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button>
-                    <Info className="w-6 h-6 text-gray-400 hover:text-white transition-colors" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
-                  <p>
-                    <strong>HERO CP™ (Civilian Portal):</strong> Patent-protected modular emergency response guidance
-                    system with visual-rhythm synchronization, full voice automation, and universal accessibility.
-                    Designed for high-stress situations with panic mode optimization.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <p
-              className={`text-gray-300 max-w-3xl mx-auto ${
-                textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
-              }`}
-            >
-              Civilian Emergency Portal • Modular Response System
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Mic className="w-5 h-5 text-emerald-400" />
-                  <span
-                    className={`font-semibold text-emerald-300 ${
-                      textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
-                    }`}
-                  >
-                    Voice Automated
-                  </span>
-                </div>
-                <p
-                  className={`text-emerald-200 ${
-                    textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                  }`}
-                >
-                  Hands-free operation designed for panic situations. Say "HERO HELP" to activate.
+          {/* Header with Voice Controls and Hero Profile Access */}
+          <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-blue-500/30 backdrop-blur-sm mb-6 p-4 rounded-xl">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white mb-2">Voice Automation & Accessibility</h2>
+                <p className="text-blue-200 text-sm">
+                  Fully voice automated • Designed for panic situations • JUMBO text for elders
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-5 h-5 text-blue-400" />
-                  <span
-                    className={`font-semibold text-blue-300 ${
-                      textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
-                    }`}
-                  >
-                    Universal Access
-                  </span>
-                </div>
-                <p
-                  className={`text-blue-200 ${
-                    textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                  }`}
-                >
-                  JUMBO text, high contrast, and accessibility features for everyone.
-                </p>
-              </div>
-
-              <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="w-5 h-5 text-orange-400" />
-                  <span
-                    className={`font-semibold text-orange-300 ${
-                      textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
-                    }`}
-                  >
-                    Panic Optimized
-                  </span>
-                </div>
-                <p
-                  className={`text-orange-200 ${
-                    textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                  }`}
-                >
-                  Large buttons, clear prompts, and stress-adaptive interface design.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Section: Emergency Response */}
-          <section id="emergency-response">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <h1
-                  className={`font-bold text-white ${
-                    textSize === "jumbo" ? "text-5xl" : textSize === "large" ? "text-4xl" : "text-3xl"
-                  }`}
-                >
-                  Emergency Response in <span className="text-teal-400">Seconds</span>
-                </h1>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button>
-                      <Info className="w-5 h-5 text-slate-400 hover:text-white transition-colors" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
-                    <p>
-                      <strong>HERO CP™ Emergency Response:</strong> AI-powered emergency coordination connecting you to
-                      help when every second counts. Features visual-rhythm guidance, multi-modal feedback, and seamless
-                      integration with professional responders through HERO OS™.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <p
-                className={`text-lg text-slate-400 max-w-3xl mx-auto ${
-                  textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
-                }`}
-              >
-                AI-powered emergency coordination with visual-rhythm guidance, evidence-based protocols, and seamless
-                integration with professional responders through HERO OS™.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              <LiveCommunications title="Emergency Coordination" />
-
-              <Card className="bg-black/40 border-red-500/30 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center space-x-2">
-                    <AlertTriangle className="w-5 h-5 text-red-400" />
-                    <span>Report Emergency</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    onClick={() => router.push("/incident-reporting")}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Report Incident
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  console.log("🔴 Activate HERO CP Button Clicked!")
-                  setEmergencyType("medical")
-                  setHeroMode(true)
-                  setHeroModeActive(true)
-                }}
-                style={{ pointerEvents: "auto", zIndex: 10 }}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-                type="button"
-              >
-                <Phone className="w-5 h-5 mr-2 inline" />
-                Activate HERO CP™
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  console.log("🟡 AED Finder Button Clicked!")
-                  setEmergencyType("aed")
-                  setHeroMode(true)
-                  setHeroModeActive(true)
-                }}
-                style={{ pointerEvents: "auto", zIndex: 10 }}
-                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-                type="button"
-              >
-                <Zap className="w-5 h-5 mr-2 inline" />
-                Find Nearest AED
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  console.log("🟢 Check-in Button Clicked!")
-                  setEmergencyType("checkin")
-                  setHeroMode(true)
-                  setHeroModeActive(true)
-                }}
-                style={{ pointerEvents: "auto", zIndex: 10 }}
-                className="text-green-400 border-green-500 hover:bg-green-700/20 font-bold py-3 px-6 rounded-xl bg-transparent border-2 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-                type="button"
-              >
-                <CheckCircle className="w-5 h-5 mr-2 inline" />
-                Check-in to Safety
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-              <button
-                onClick={handleShareLocation}
-                style={{ pointerEvents: "auto", zIndex: 10 }}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-                type="button"
-              >
-                <MapPin className="w-4 h-4 mr-2 inline" />
-                Share Location (LAB™)
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-4 h-4 ml-2 inline opacity-70 hover:opacity-100" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p className="text-sm">
-                      Activates LAB™ (Last Active Beacon) to share your encrypted location with emergency contacts and
-                      nearby responders via satellite network. Updates every 30 seconds.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </button>
-
-              <button
-                onClick={handleSOS}
-                style={{ pointerEvents: "auto", zIndex: 10 }}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border-2 border-red-500"
-                type="button"
-              >
-                <AlertTriangle className="w-4 h-4 mr-2 inline" />
-                Emergency SOS
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-4 h-4 ml-2 inline opacity-70 hover:opacity-100" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p className="text-sm">
-                      <strong>Double confirmation required.</strong> Sends LAB™ beacon to satellite network, alerts all
-                      emergency services, and activates priority response protocols. Only use for genuine emergencies.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </button>
-            </div>
-
-            <div className="bg-gradient-to-r from-orange-900/40 to-red-900/40 border-orange-500/30 backdrop-blur-sm rounded-xl p-6 mb-8">
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-400" />
-                Community Safety & Reporting
-              </h3>
-              <p className="text-orange-200 text-sm mb-4">
-                Help your community stay safe by reporting hazards and earning rewards
-              </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link href="/incident-reporting">
-                  <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold w-full sm:w-auto">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Report an Incident
-                  </Button>
-                </Link>
-                <Link href="/fire-ban-portal">
-                  <Button className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold w-full sm:w-auto">
-                    <Flame className="w-4 h-4 mr-2" />
-                    Wildfire Bans & Restrictions
-                  </Button>
-                </Link>
-                <Link href="/community-portal">
-                  <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold w-full sm:w-auto">
-                    <Users className="w-4 h-4 mr-2" />
-                    Community Hub
-                  </Button>
-                </Link>
                 <Link href="/hero-profile">
-                  <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold w-full sm:w-auto">
+                  <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold">
                     <Award className="w-4 h-4 mr-2" />
-                    My Badges
+                    My Hero Profile
                   </Button>
                 </Link>
+
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30"
+                  >
+                    Voice: ON
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30"
+                  >
+                    JUMBO Text
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30"
+                  >
+                    High Contrast
+                  </Button>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {emergencyTypes.map((type, index) => (
-                <button
-                  key={index}
-                  className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-teal-500/50 transition-all duration-300 group cursor-pointer text-left w-full hover:scale-105 active:scale-95"
-                  onClick={(e) => handleEmergencyTypeClick(type.id, e)}
-                  type="button"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${type.bgColor}`}>
-                      <type.icon className="w-6 h-6 text-white" />
-                    </div>
+          <div className="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border-b border-emerald-500/30">
+            <div className="container mx-auto px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                {/* Voice Automation Status */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-3 h-3 rounded-full ${isVoiceActive ? "bg-green-500 animate-pulse" : "bg-gray-500"}`}
+                    />
+                    <span
+                      className={`font-semibold ${textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"} text-emerald-300`}
+                    >
+                      VOICE AUTOMATED
+                    </span>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" onClick={(e) => e.stopPropagation()}>
-                          <Info className="w-4 h-4 text-slate-400 hover:text-white transition-colors" />
+                        <button>
+                          <Info className="w-4 h-4 text-gray-400 hover:text-emerald-400 transition-colors" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
                         <p>
-                          <strong>{type.title}:</strong> {type.description} Features evidence-based protocols, visual
-                          guidance, and real-time coordination with professional responders.
+                          <strong>Full Voice Automation:</strong> Every feature is voice-controlled and designed for
+                          panic/high-stress situations. Hands-free operation with voice commands in 100+ languages. Say
+                          "HERO HELP" to activate emergency mode.
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
-                  <h3
-                    className={`font-semibold text-white mb-2 ${
-                      textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
-                    }`}
-                  >
-                    {type.label}
-                  </h3>
-                  <p
-                    className={`text-slate-400 ${
-                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                    }`}
-                  >
-                    {type.description}
-                  </p>
-                </button>
-              ))}
-            </div>
 
-            {/* Section: Training Modes */}
-            <section id="training-modes">
-              <h2
-                className={`font-bold text-white mb-6 ${
-                  textSize === "jumbo" ? "text-4xl" : textSize === "large" ? "text-3xl" : "text-2xl"
-                }`}
-              >
-                Training Modes
-              </h2>
-              <p
-                className={`text-lg text-slate-400 mb-8 ${
-                  textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
-                }`}
-              >
-                Enhance your emergency response skills with our tailored training programs.
-              </p>
-
-              {/* Training Mode Cards */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div
-                  className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 cursor-pointer"
-                  onClick={() => setTrainingMode("civilian")}
-                >
-                  <h3
-                    className={`font-semibold text-white mb-2 ${
-                      textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
-                    }`}
-                  >
-                    Civilian Training
-                  </h3>
-                  <p
-                    className={`text-slate-400 ${
-                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                    }`}
-                  >
-                    Learn basic emergency response techniques.
-                  </p>
-                  {trainingMode === "civilian" && (
-                    <Badge className="mt-2 bg-blue-500/20 text-blue-400 border-blue-500/30">Active</Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-orange-400" />
+                    <span
+                      className={`font-semibold ${textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"} text-orange-300`}
+                    >
+                      PANIC MODE READY
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button>
+                          <Info className="w-4 h-4 text-gray-400 hover:text-orange-400 transition-colors" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
+                        <p>
+                          <strong>High-Stress Design:</strong> Interface optimized for panic situations with large
+                          buttons, clear voice prompts, simplified navigation, and automatic emergency detection. System
+                          adapts to stress levels and provides calming guidance.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
-                <div
-                  className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
-                  onClick={() => setTrainingMode("professional")}
-                >
-                  <h3
-                    className={`font-semibold text-white mb-2 ${
-                      textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
+
+                {/* Accessibility Controls */}
+                <div className="flex items-center gap-3">
+                  {/* Text Size Control */}
+                  <div className="flex items-center gap-2">
+                    <Type className="w-4 h-4 text-blue-400" />
+                    <select
+                      value={textSize}
+                      onChange={(e) => setTextSize(e.target.value as "normal" | "large" | "jumbo")}
+                      className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm"
+                    >
+                      <option value="normal">Normal Text</option>
+                      <option value="large">Large Text</option>
+                      <option value="jumbo">JUMBO Text</option>
+                    </select>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button>
+                          <Info className="w-4 h-4 text-gray-400 hover:text-blue-400 transition-colors" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-slate-800 border-slate-600 text-white z-[60]">
+                        <p>
+                          <strong>JUMBO Text Mode:</strong> Extra-large text designed for elders and users with sight
+                          challenges. Includes high contrast and simplified layouts for maximum accessibility.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  {/* Voice Speed Control */}
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-purple-400" />
+                    <select
+                      value={voiceSpeed}
+                      onChange={(e) => setVoiceSpeed(e.target.value as "slow" | "normal" | "fast")}
+                      className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm"
+                    >
+                      <option value="slow">Slow Voice</option>
+                      <option value="normal">Normal Voice</option>
+                      <option value="fast">Fast Voice</option>
+                    </select>
+                  </div>
+
+                  {/* High Contrast Toggle */}
+                  <button
+                    onClick={() => setHighContrastMode(!highContrastMode)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded border transition-colors ${
+                      highContrastMode
+                        ? "bg-yellow-500 border-yellow-400 text-black"
+                        : "bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
                     }`}
                   >
-                    Professional Training
-                  </h3>
-                  <p
-                    className={`text-slate-400 ${
-                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
-                    }`}
-                  >
-                    Advanced training for certified responders.
-                  </p>
-                  {trainingMode === "professional" && (
-                    <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">Active</Badge>
-                  )}
+                    <Eye className="w-4 h-4" />
+                    <span className="text-sm font-medium">High Contrast</span>
+                  </button>
+
+                  {/* Universal Access Badge */}
+                  <Badge variant="outline" className="border-green-500 text-green-400">
+                    <Users className="w-3 h-3 mr-1" />
+                    Universal Access
+                  </Badge>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Main Content with Dynamic Text Sizing */}
+          <div
+            className={`container mx-auto px-4 py-8 ${textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-base"}`}
+          >
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-teal-500">
+                  <Shield className="w-8 h-8 text-white" />
+                </div>
+                <h1
+                  className={`font-bold bg-gradient-to-r from-white via-blue-200 to-teal-200 bg-clip-text text-transparent ${
+                    textSize === "jumbo" ? "text-6xl" : textSize === "large" ? "text-5xl" : "text-4xl"
+                  }`}
+                >
+                  SafeRoute AI™ • HERO CP™
+                </h1>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button>
+                      <Info className="w-6 h-6 text-gray-400 hover:text-white transition-colors" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
+                    <p>
+                      <strong>HERO CP™ (Civilian Portal):</strong> Patent-protected modular emergency response guidance
+                      system with visual-rhythm synchronization, full voice automation, and universal accessibility.
+                      Designed for high-stress situations with panic mode optimization.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <p
+                className={`text-gray-300 max-w-3xl mx-auto ${
+                  textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
+                }`}
+              >
+                Civilian Emergency Portal • Modular Response System
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 max-w-4xl mx-auto">
+                <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Mic className="w-5 h-5 text-emerald-400" />
+                    <span
+                      className={`font-semibold text-emerald-300 ${
+                        textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
+                      }`}
+                    >
+                      Voice Automated
+                    </span>
+                  </div>
+                  <p
+                    className={`text-emerald-200 ${
+                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                    }`}
+                  >
+                    Hands-free operation designed for panic situations. Say "HERO HELP" to activate.
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-5 h-5 text-blue-400" />
+                    <span
+                      className={`font-semibold text-blue-300 ${
+                        textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
+                      }`}
+                    >
+                      Universal Access
+                    </span>
+                  </div>
+                  <p
+                    className={`text-blue-200 ${
+                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                    }`}
+                  >
+                    JUMBO text, high contrast, and accessibility features for everyone.
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
+                    <span
+                      className={`font-semibold text-orange-300 ${
+                        textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
+                      }`}
+                    >
+                      Panic Optimized
+                    </span>
+                  </div>
+                  <p
+                    className={`text-orange-200 ${
+                      textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                    }`}
+                  >
+                    Large buttons, clear prompts, and stress-adaptive interface design.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Section: Emergency Response */}
+            <section id="emergency-response">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <h1
+                    className={`font-bold text-white ${
+                      textSize === "jumbo" ? "text-5xl" : textSize === "large" ? "text-4xl" : "text-3xl"
+                    }`}
+                  >
+                    Emergency Response in <span className="text-teal-400">Seconds</span>
+                  </h1>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button>
+                        <Info className="w-5 h-5 text-slate-400 hover:text-white transition-colors" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
+                      <p>
+                        <strong>HERO CP™ Emergency Response:</strong> AI-powered emergency coordination connecting you
+                        to help when every second counts. Features visual-rhythm guidance, multi-modal feedback, and
+                        seamless integration with professional responders through HERO OS™.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <p
+                  className={`text-lg text-slate-400 max-w-3xl mx-auto ${
+                    textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
+                  }`}
+                >
+                  AI-powered emergency coordination with visual-rhythm guidance, evidence-based protocols, and seamless
+                  integration with professional responders through HERO OS™.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log("🔴 Activate HERO CP Button Clicked!")
+                    setEmergencyType("medical")
+                    setHeroMode(true)
+                    setHeroModeActive(true)
+                  }}
+                  style={{ pointerEvents: "auto", zIndex: 10 }}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                  type="button"
+                >
+                  <Phone className="w-5 h-5 mr-2 inline" />
+                  Activate HERO CP™
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log("🟡 AED Finder Button Clicked!")
+                    setEmergencyType("aed")
+                    setHeroMode(true)
+                    setHeroModeActive(true)
+                  }}
+                  style={{ pointerEvents: "auto", zIndex: 10 }}
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                  type="button"
+                >
+                  <Zap className="w-5 h-5 mr-2 inline" />
+                  Find Nearest AED
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log("🟢 Check-in Button Clicked!")
+                    setEmergencyType("checkin")
+                    setHeroMode(true)
+                    setHeroModeActive(true)
+                  }}
+                  style={{ pointerEvents: "auto", zIndex: 10 }}
+                  className="text-green-400 border-green-500 hover:bg-green-700/20 font-bold py-3 px-6 rounded-xl bg-transparent border-2 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                  type="button"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2 inline" />
+                  Check-in to Safety
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+                <button
+                  onClick={handleShareLocation}
+                  style={{ pointerEvents: "auto", zIndex: 10 }}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                  type="button"
+                >
+                  <MapPin className="w-4 h-4 mr-2 inline" />
+                  Share Location (LAB™)
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-4 h-4 ml-2 inline opacity-70 hover:opacity-100" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-sm">
+                        Activates LAB™ (Last Active Beacon) to share your encrypted location with emergency contacts and
+                        nearby responders via satellite network. Updates every 30 seconds.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </button>
+
+                <button
+                  onClick={handleSOS}
+                  style={{ pointerEvents: "auto", zIndex: 10 }}
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border-2 border-red-500"
+                  type="button"
+                >
+                  <AlertTriangle className="w-4 h-4 mr-2 inline" />
+                  Emergency SOS
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-4 h-4 ml-2 inline opacity-70 hover:opacity-100" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-sm">
+                        <strong>Double confirmation required.</strong> Sends LAB™ beacon to satellite network, alerts
+                        all emergency services, and activates priority response protocols. Only use for genuine
+                        emergencies.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </button>
+              </div>
+
+              <div className="bg-gradient-to-r from-orange-900/40 to-red-900/40 border-orange-500/30 backdrop-blur-sm rounded-xl p-6 mb-8">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-orange-400" />
+                  Community Safety & Reporting
+                </h3>
+                <p className="text-orange-200 text-sm mb-4">
+                  Help your community stay safe by reporting hazards and earning rewards
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link href="/incident-reporting">
+                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold w-full sm:w-auto">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Report an Incident
+                    </Button>
+                  </Link>
+                  <Link href="/fire-ban-portal">
+                    <Button className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold w-full sm:w-auto">
+                      <Flame className="w-4 h-4 mr-2" />
+                      Wildfire Bans & Restrictions
+                    </Button>
+                  </Link>
+                  <Link href="/community-portal">
+                    <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold w-full sm:w-auto">
+                      <Users className="w-4 h-4 mr-2" />
+                      Community Hub
+                    </Button>
+                  </Link>
+                  <Link href="/hero-profile">
+                    <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold w-full sm:w-auto">
+                      <Award className="w-4 h-4 mr-2" />
+                      My Badges
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                {emergencyTypes.map((type, index) => (
+                  <button
+                    key={index}
+                    className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-teal-500/50 transition-all duration-300 group cursor-pointer text-left w-full hover:scale-105 active:scale-95"
+                    onClick={(e) => handleEmergencyTypeClick(type.id, e)}
+                    type="button"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${type.bgColor}`}>
+                        <type.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" onClick={(e) => e.stopPropagation()}>
+                            <Info className="w-4 h-4 text-slate-400 hover:text-white transition-colors" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm bg-slate-800 border-slate-600 text-white z-[60]">
+                          <p>
+                            <strong>{type.title}:</strong> {type.description} Features evidence-based protocols, visual
+                            guidance, and real-time coordination with professional responders.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <h3
+                      className={`font-semibold text-white mb-2 ${
+                        textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
+                      }`}
+                    >
+                      {type.label}
+                    </h3>
+                    <p
+                      className={`text-slate-400 ${
+                        textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                      }`}
+                    >
+                      {type.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Section: Training Modes */}
+              <section id="training-modes">
+                <h2
+                  className={`font-bold text-white mb-6 ${
+                    textSize === "jumbo" ? "text-4xl" : textSize === "large" ? "text-3xl" : "text-2xl"
+                  }`}
+                >
+                  Training Modes
+                </h2>
+                <p
+                  className={`text-lg text-slate-400 mb-8 ${
+                    textSize === "jumbo" ? "text-2xl" : textSize === "large" ? "text-xl" : "text-lg"
+                  }`}
+                >
+                  Enhance your emergency response skills with our tailored training programs.
+                </p>
+
+                {/* Training Mode Cards */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div
+                    className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 cursor-pointer"
+                    onClick={() => setTrainingMode("civilian")}
+                  >
+                    <h3
+                      className={`font-semibold text-white mb-2 ${
+                        textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
+                      }`}
+                    >
+                      Civilian Training
+                    </h3>
+                    <p
+                      className={`text-slate-400 ${
+                        textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                      }`}
+                    >
+                      Learn basic emergency response techniques.
+                    </p>
+                    {trainingMode === "civilian" && (
+                      <Badge className="mt-2 bg-blue-500/20 text-blue-400 border-blue-500/30">Active</Badge>
+                    )}
+                  </div>
+                  <div
+                    className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+                    onClick={() => setTrainingMode("professional")}
+                  >
+                    <h3
+                      className={`font-semibold text-white mb-2 ${
+                        textSize === "jumbo" ? "text-3xl" : textSize === "large" ? "text-2xl" : "text-xl"
+                      }`}
+                    >
+                      Professional Training
+                    </h3>
+                    <p
+                      className={`text-slate-400 ${
+                        textSize === "jumbo" ? "text-xl" : textSize === "large" ? "text-lg" : "text-sm"
+                      }`}
+                    >
+                      Advanced training for certified responders.
+                    </p>
+                    {trainingMode === "professional" && (
+                      <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">Active</Badge>
+                    )}
+                  </div>
+                </div>
+              </section>
             </section>
-          </section>
+          </div>
+          <FloatingEmergencyButtons />
         </div>
-        <FloatingEmergencyButtons />
       </TooltipProvider>
-    </div>
+    </>
   )
 }
